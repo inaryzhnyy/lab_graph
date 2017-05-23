@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5A93670F-60BB-49D8-BC27-53EA5068DA36}</ProjectGuid>
-    <RootNamespace>graph</RootNamespace>
+    <ProjectGuid>{227DFBF5-415D-4390-BEB5-4BFBE1D25484}</ProjectGuid>
+    <RootNamespace>lab_graph</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -110,10 +110,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="graph.h" />
+    <ClCompile Include="graph.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="graph.cpp" />
+    <ClInclude Include="graph.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
