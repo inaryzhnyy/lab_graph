@@ -16,7 +16,8 @@ public:
 	void transformToAdjList();
 	void transformToAdjMatrix();
 	void transformToListOfEdges();
-	void writeGraph(std::string fileName);
+	void writeGraph(std::string fileName);	char type_g();
+
 private:
 	vector <set<pair <int, int>>> LOV;//список смежных сершин
 	vector <set <tuple <int, int, int>>> LOV_W;//список смежных вершин взвешенный
@@ -24,12 +25,11 @@ private:
 	vector<pair<int, int> >          LOE; // список ребер
 	vector<tuple<int, int, int> >    LOE_W; // список ребер, взвешенный
 
+	char type;
+	bool direct;//ориентированный/нет
+	bool weight;//взвешенный/нет
+	int n;//количество вершин графа
+	int m;//количество рёбер
+
 };
 
-Graph::Graph()
-{
-}
-
-Graph::~Graph()
-{
-}
