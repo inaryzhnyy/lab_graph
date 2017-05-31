@@ -16,6 +16,7 @@ Graph::Graph()
 Graph::~Graph()
 {
 }
+
 void Graph::readGraph(string fileName) 
 {
 		FILE *file;
@@ -212,13 +213,67 @@ void Graph::writeLOE(FILE & file) {
 	}
 }
 
-
-
 //добавление ребра
-void Graph::addEdge(int from, int to, int weight)
-{
+
+void Graph::addEdge(int from, int to, int weight) 
+{	
+	if (!weight) weight = 1;
+	--from;
+	--to;
+	switch (type) 
+	{
+	case 'C':
+		addEdgeAdjMatx(from, to, weight);
+		break;
+
+	case 'L':
+		addEdgeAdjList(from, to, weight);
+		break;
+
+	case 'E':
+		addEdgeLOE(from, to, weight);
+		break;
+	}
+
 }
-//удаление ребра
+
+void Graph::addEdgeAdjMatx(int from, int to, int weight) 
+{
+	AdjMatx[from][to] = weight;
+	if (!direct) 
+	{
+		AdjMatx[to][from] = weight;
+	}
+}
+
+void Graph::addEdgeAdjList(int from, int to, int weight) {
+	if (weight) {
+		AdjLst_W[from].push_back(make_pair(to + 1, weight));
+		if (!direct)
+			AdjLst_W[to].push_back(make_pair(from + 1, weight));
+	}
+	else {
+		AdjLst[from].push_back(to + 1);
+		if (!direct)
+			AdjLst[to].push_back(from + 1);
+	}
+}
+
+void Graph::addEdgeLOE(int from, int to, int weight) 
+{
+	if (weight) 
+	{
+		LOE_W.push_back(make_tuple(from + 1, to + 1, weight));
+	}
+	else
+	{
+		LOE.push_back(make_pair(from + 1, to + 1));
+	}
+	m++;
+}
+
+
+
 void Graph::removeEdge(int from, int to)
 {
 }
@@ -236,6 +291,7 @@ void Graph::transformToAdjMatrix()
 //перевод в список рёбер
 void Graph::transformToListOfEdges()
 {};
+
 char Graph::type_g()
 {	
 	return this->type;

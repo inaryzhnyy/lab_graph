@@ -48,5 +48,10 @@ private:
 	void writeAdjMatx(FILE&);
 	void writeAdjList(FILE&);
 	void writeLOE(FILE&);
+
+	// добавление ребра
+	void addEdgeAdjMatx(int from, int to, int weight);
+	void addEdgeAdjList(int from, int to, int weight);
+	void addEdgeLOE(int from, int to, int weight);
 };
 
