@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <tuple>
+#include <algorithm>
+
 
 using namespace std;
 class Graph
@@ -19,8 +22,8 @@ public:
 	void writeGraph(std::string fileName);	char type_g();
 
 private:
-	vector <vector<pair <int, int>>> AdjLst;//список смежных сершин
-	vector <vector <tuple <int, int, int>>> AdjLst_W;//список смежных вершин взвешенный
+	vector <vector<int>> AdjLst;//список смежных сершин
+	vector <vector <pair <int, int>>> AdjLst_W;//список смежных вершин взвешенный
 
 	vector<pair<int, int> >          LOE; // список ребер
 	vector<tuple<int, int, int> >    LOE_W; // список ребер, взвешенный
@@ -28,10 +31,22 @@ private:
 	vector<vector<int>>             AdjMatx;  // матрица смежности
 
 	char type;
-	bool direct;//ориентированный/нет
-	bool weight;//взвешенный/нет
+	int direct;//ориентированный/нет
+	int weight;//взвешенный/нет
 	int n;//количество вершин графа
 	int m;//количество рёбер
 
+	//внутренние функции
+
+	// считывание
+	void readAdjMatx(FILE&);
+	void readAdjList(FILE&);
+	void readLOE(FILE&);
+
+	// вывод
+
+	void writeAdjMatx(FILE&);
+	void writeAdjList(FILE&);
+	void writeLOE(FILE&);
 };
 
