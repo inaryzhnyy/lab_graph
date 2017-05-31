@@ -19,11 +19,13 @@ public:
 	void writeGraph(std::string fileName);	char type_g();
 
 private:
-	vector <set<pair <int, int>>> LOV;//список смежных сершин
-	vector <set <tuple <int, int, int>>> LOV_W;//список смежных вершин взвешенный
+	vector <vector<pair <int, int>>> AdjLst;//список смежных сершин
+	vector <vector <tuple <int, int, int>>> AdjLst_W;//список смежных вершин взвешенный
 
 	vector<pair<int, int> >          LOE; // список ребер
 	vector<tuple<int, int, int> >    LOE_W; // список ребер, взвешенный
+
+	vector<vector<int>>             AdjMatx;  // матрица смежности
 
 	char type;
 	bool direct;//ориентированный/нет
