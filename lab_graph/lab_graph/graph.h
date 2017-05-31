@@ -53,5 +53,13 @@ private:
 	void addEdgeAdjMatx(int from, int to, int weight);
 	void addEdgeAdjList(int from, int to, int weight);
 	void addEdgeLOE(int from, int to, int weight);
+	
+	//удаление ребра
+
+	void rmEdgeAdjMatx(int from, int to);
+	void rmEdgeAdjList(int from, int to);
+	void subRmEAL(int from, int to);
+	void rmEdgeLOE(int from, int to);
+	void subRmELOE(int from, int to);
 };
 

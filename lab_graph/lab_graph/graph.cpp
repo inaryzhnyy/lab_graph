@@ -272,12 +272,112 @@ void Graph::addEdgeLOE(int from, int to, int weight)
 	m++;
 }
 
+//удаление ребра
 
+void Graph::removeEdge(int from, int to) {
 
-void Graph::removeEdge(int from, int to)
-{
+	--from;
+	--to;
+	switch (type) {
+	case 'C':
+		rmEdgeAdjMatx(from, to);
+		break;
+	case 'L':
+		rmEdgeAdjList(from, to);
+		break;
+	case 'E':
+		rmEdgeLOE(from, to);
+		break;
+	}
 }
-//изменение веса ребра
+
+void Graph::rmEdgeAdjMatx(int from, int to) {
+	AdjMatx[from][to] = 0;
+	if (!direct)
+		AdjMatx[to][from] = 0;
+}
+
+void subRmEAL(int from, int to) {
+
+}
+
+void Graph::rmEdgeAdjList(int from, int to)
+{
+	if (weight)
+	{
+		for (int i = 0; i < AdjLst_W[from].size(); i++) {
+			if (AdjLst_W[from][i].first == to + 1) {
+				AdjLst_W[from][i].first = 0;
+				AdjLst_W[from][i].second = 0;
+			}
+		}
+		if (!direct) {
+			for (int i = 0; i < AdjLst_W[to].size(); i++) {
+				if (AdjLst_W[to][i].first == from + 1) {
+					AdjLst_W[to][i].first = 0;
+					AdjLst_W[to][i].second = 0;
+					return;
+				}
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < AdjLst[from].size(); i++) {
+			if (AdjLst[from][i] == to + 1) {
+				AdjLst[from][i] = 0;
+				AdjLst[from][i] = 0;
+			}
+		}
+		if (!direct) {
+			for (int i = 0; i < AdjLst[to].size(); i++) {
+				if (AdjLst[to][i] == from + 1) {
+					AdjLst[to][i] = 0;
+					AdjLst[to][i] = 0;
+					return;
+				}
+			}
+		}
+	}
+}
+
+void Graph::rmEdgeLOE(int from, int to) {
+	if (weight) {
+		for (int i = 0; i < LOE_W.size(); i++) {
+			if (get<0>(LOE_W[i]) == from + 1 && get<1>(LOE_W[i]) == to + 1) {
+				get<0>(LOE_W[i]) = 0;
+				get<1>(LOE_W[i]) = 0;
+				get<2>(LOE_W[i]) = 0;
+				return;
+			}
+			if (!direct) {
+				if (get<0>(LOE_W[i]) == to + 1 && get<1>(LOE_W[i]) == from + 1) {
+					get<0>(LOE_W[i]) = 0;
+					get<1>(LOE_W[i]) = 0;
+					get<2>(LOE_W[i]) = 0;
+					return;
+				}
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < LOE.size(); i++) {
+			if (LOE[i].first == from + 1 && LOE[i].second == to + 1) {
+				LOE[i].first = 0;
+				LOE[i].second = 0;
+				return;
+			}
+			if (!direct) {
+				if (LOE[i].first == to + 1 && LOE[i].second == from + 1) {
+					LOE[i].first = 0;
+					LOE[i].second = 0;
+					return;
+				}
+			}
+		}
+	}
+}
+
+
 int Graph::changeEdge(int from, int to, int newWeight)
 {
 	return 0;
