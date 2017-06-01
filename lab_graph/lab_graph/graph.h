@@ -1,46 +1,53 @@
 #pragma once
+#include <iostream>
 #include <string>
 #include <vector>
-#include <set>
+#include <fstream>
 #include <tuple>
-#include <algorithm>
+//#include <algorithm>
+#include <set>
+//#include <queue>
+//#include <stack>
 
 //ТEТ Ч индикатор представлени€ список ребер, LOE//ТLТ Ч индикатор представлени€ список смежных вершин AdjList
 //ТCТ Ч индикатор представлени€ матрица смежности AdjMatx
 
-using namespace std;
+//using namespace std;
+
 class Graph
 {
 public:
 	Graph();
 	~Graph();
-	void readGraph(string fileName);
+	void readGraph(std::string fileName);
 	void addEdge(int from, int to, int weight=0);
 	void removeEdge(int from, int to);
-	int changeEdge(int from, int to, int newWeight);//возвращает старое значение веса ребра
+	int changeEdge(int from, int to, int newWeight=0);
 	void transformToAdjList();
 	void transformToAdjMatrix();
 	void transformToListOfEdges();
 	void writeGraph(std::string fileName);
-	char type_g();
+	//char type_g();
 
 private:
-	vector <vector<int>> AdjLst;//список смежных сершин
-	vector <vector <pair <int, int>>> AdjLst_W;//список смежных вершин взвешенный
+	std::vector <std::vector<int>> AdjLst;//список смежных сершин
+	std::vector <std::vector <std::pair <int, int>>> AdjLst_W;//список смежных вершин взвешенный
 
-	vector<pair<int, int> >          LOE; // список ребер
-	vector<tuple<int, int, int> >    LOE_W; // список ребер, взвешенный
+	std::vector<std::pair<int, int> >          LOE; // список ребер
+	std::vector<std::tuple<int, int, int> >    LOE_W; // список ребер, взвешенный
 
-	vector<vector<int>>             AdjMatx;  // матрица смежности
+	std::vector<std::vector<int>>             AdjMatx;  // матрица смежности
 
-	char type;
+
+
+	char gtype;
 	int direct;//ориентированный/нет
 	int weight;//взвешенный/нет
 	int n;//количество вершин графа
 	int m;//количество рЄбер
 
 	//внутренние функции
-
+	Graph(int num, char intype);
 	// считывание
 	void readAdjMatx(FILE&);
 	void readAdjList(FILE&);

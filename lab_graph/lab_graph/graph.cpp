@@ -1,30 +1,52 @@
-#include <fstream>
-#include <string>
-#include <iostream>
 #include "graph.h"
 
-using namespace std;
+//using namespace std;
 
 Graph::Graph()
 {
-	type = 0;
+	gtype = 0;
 	direct = 0;
 	weight = 0;
 	n = m = 0;
+}
+
+Graph::Graph(int num, char intype)
+{
+	n = num;
+	m = 0;
+	gtype = intype;
+	direct = 0;
+	weight = 1;
+
+	switch (gtype) {
+	case 'C':
+		AdjMatx.resize(n);
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				AdjMatx[i].push_back(0);
+			}
+		}
+		break;
+	case 'L':
+		AdjLst_W.resize(n);
+		break;
+	case 'E':
+		break;
+	}
 }
 
 Graph::~Graph()
 {
 }
 
-void Graph::readGraph(string fileName)
+void Graph::readGraph(std::string fileName)
 {
 	FILE *file;
-	file = fopen(fileName.c_str(), "direct");
+	file = fopen(fileName.c_str(), "r");
 
-	fscanf(file, "%c", &type);
+	fscanf(file, "%c", &gtype);
 
-	switch (type) {
+	switch (gtype) {
 	case 'E': // список ребер
 		readLOE(*file);
 		break;
@@ -43,6 +65,7 @@ void Graph::readAdjMatx(FILE & file) {
 
 	int k;
 	AdjMatx.resize(n);
+
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			fscanf(&file, "%d", &k);
@@ -65,8 +88,8 @@ void Graph::readAdjList(FILE & file) {
 	AdjLst_W.resize(n);
 	for (int i = 0; i < n; i++) {
 		fgets(str, max_el, &file);
-		vector<string> arr;
-		string digit = "";
+		std::vector<std::string> arr;
+		std::string digit = "";
 		for (int j = 0; j < max_el; j++) {
 			if (str[j] == '\0' || str[j] == '\n') {
 				if (digit != "")
@@ -87,7 +110,7 @@ void Graph::readAdjList(FILE & file) {
 		if (weight) {
 			for (int j = 0; j < arr.size(); j += 2) {
 				if (stoi(arr[j])) {
-					AdjLst_W[i].push_back(make_pair(stoi(arr[j]), stoi(arr[j + 1])));
+					AdjLst_W[i].push_back(std::make_pair(stoi(arr[j]), stoi(arr[j + 1])));
 					m++;
 				}
 			}
@@ -111,13 +134,13 @@ void Graph::readLOE(FILE & file) {
 	if (weight) {
 		while (!feof(&file)) {
 			fscanf(&file, "%d%d%d", &firstv, &secondv, &weightv);
-			LOE_W.push_back(make_tuple(firstv, secondv, weightv));
+			LOE_W.push_back(std::make_tuple(firstv, secondv, weightv));
 		}
 		if (LOE_W.size() > 1) {
-			int pre_frst = get<0>(LOE_W[LOE_W.size() - 2]);
-			int pre_sec = get<1>(LOE_W[LOE_W.size() - 2]);
-			int curr_frst = get<0>(LOE_W[LOE_W.size() - 1]);
-			int curr_sec = get<1>(LOE_W[LOE_W.size() - 1]);
+			int pre_frst = std::get<0>(LOE_W[LOE_W.size() - 2]);
+			int pre_sec = std::get<1>(LOE_W[LOE_W.size() - 2]);
+			int curr_frst = std::get<0>(LOE_W[LOE_W.size() - 1]);
+			int curr_sec = std::get<1>(LOE_W[LOE_W.size() - 1]);
 			if (pre_frst == curr_frst && pre_sec == curr_sec)
 				LOE_W.pop_back();
 		}
@@ -125,7 +148,7 @@ void Graph::readLOE(FILE & file) {
 	else {
 		while (!feof(&file)) {
 			fscanf(&file, "%d%d", &firstv, &secondv);
-			LOE.push_back(make_pair(firstv, secondv));
+			LOE.push_back(std::make_pair(firstv, secondv));
 		}
 		if (LOE.size() > 1) {
 			int pre_frst = LOE[LOE.size() - 2].first;
@@ -138,14 +161,14 @@ void Graph::readLOE(FILE & file) {
 	}
 }
 
-void Graph::writeGraph(string fileName) {
+void Graph::writeGraph(std::string fileName) {
 
 	FILE *file;
-	file = fopen(fileName.c_str(), "weight");
+	file = fopen(fileName.c_str(), "w");
 
-	fprintf(file, "%c", type);
+	fprintf(file, "%c", gtype);
 
-	switch (type) {
+	switch (gtype) {
 	case 'C':
 		writeAdjMatx(*file);
 		break;
@@ -189,7 +212,7 @@ void Graph::writeAdjList(FILE & file) {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < AdjLst[i].size(); j++) {
 				if (AdjLst[i][j])
-					fprintf(&file, "%d ", &AdjLst[i][j]);
+					fprintf(&file, "%d ", AdjLst[i][j]);
 			}
 			fprintf(&file, "\n");
 		}
@@ -201,8 +224,8 @@ void Graph::writeLOE(FILE & file) {
 
 	if (weight) {
 		for (int i = 0; i < m; i++) {
-			if (get<0>(LOE_W[i]) && get<1>(LOE_W[i]))
-				fprintf(&file, "%d %d %d\n", get<0>(LOE_W[i]), get<1>(LOE_W[i]), get<2>(LOE_W[i]));
+			if (std::get<0>(LOE_W[i]) && std::get<1>(LOE_W[i]))
+				fprintf(&file, "%d %d %d\n", std::get<0>(LOE_W[i]), std::get<1>(LOE_W[i]), std::get<2>(LOE_W[i]));
 		}
 	}
 	else {
@@ -220,7 +243,7 @@ void Graph::addEdge(int from, int to, int weight)
 	if (!weight) weight = 1;
 	--from;
 	--to;
-	switch (type)
+	switch (gtype)
 	{
 	case 'C':
 		addEdgeAdjMatx(from, to, weight);
@@ -248,9 +271,9 @@ void Graph::addEdgeAdjMatx(int from, int to, int weight)
 
 void Graph::addEdgeAdjList(int from, int to, int weight) {
 	if (weight) {
-		AdjLst_W[from].push_back(make_pair(to + 1, weight));
+		AdjLst_W[from].push_back(std::make_pair(to + 1, weight));
 		if (!direct)
-			AdjLst_W[to].push_back(make_pair(from + 1, weight));
+			AdjLst_W[to].push_back(std::make_pair(from + 1, weight));
 	}
 	else {
 		AdjLst[from].push_back(to + 1);
@@ -263,11 +286,11 @@ void Graph::addEdgeLOE(int from, int to, int weight)
 {
 	if (weight)
 	{
-		LOE_W.push_back(make_tuple(from + 1, to + 1, weight));
+		LOE_W.push_back(std::make_tuple(from + 1, to + 1, weight));
 	}
 	else
 	{
-		LOE.push_back(make_pair(from + 1, to + 1));
+		LOE.push_back(std::make_pair(from + 1, to + 1));
 	}
 	m++;
 }
@@ -278,7 +301,7 @@ void Graph::removeEdge(int from, int to) {
 
 	--from;
 	--to;
-	switch (type) {
+	switch (gtype) {
 	case 'C':
 		rmEdgeAdjMatx(from, to);
 		break;
@@ -305,14 +328,16 @@ void Graph::rmEdgeAdjList(int from, int to)
 {
 	if (weight)
 	{
-		for (int i = 0; i < AdjLst_W[from].size(); i++) {
+		for (int i = 0; i < AdjLst_W[from].size(); i++)
+		{
 			if (AdjLst_W[from][i].first == to + 1) {
 				AdjLst_W[from][i].first = 0;
 				AdjLst_W[from][i].second = 0;
 			}
 		}
 		if (!direct) {
-			for (int i = 0; i < AdjLst_W[to].size(); i++) {
+			for (int i = 0; i < AdjLst_W[to].size(); i++)
+			{
 				if (AdjLst_W[to][i].first == from + 1) {
 					AdjLst_W[to][i].first = 0;
 					AdjLst_W[to][i].second = 0;
@@ -343,17 +368,17 @@ void Graph::rmEdgeAdjList(int from, int to)
 void Graph::rmEdgeLOE(int from, int to) {
 	if (weight) {
 		for (int i = 0; i < LOE_W.size(); i++) {
-			if (get<0>(LOE_W[i]) == from + 1 && get<1>(LOE_W[i]) == to + 1) {
-				get<0>(LOE_W[i]) = 0;
-				get<1>(LOE_W[i]) = 0;
-				get<2>(LOE_W[i]) = 0;
+			if (std::get<0>(LOE_W[i]) == from + 1 && std::get<1>(LOE_W[i]) == to + 1) {
+				std::get<0>(LOE_W[i]) = 0;
+				std::get<1>(LOE_W[i]) = 0;
+				std::get<2>(LOE_W[i]) = 0;
 				return;
 			}
 			if (!direct) {
-				if (get<0>(LOE_W[i]) == to + 1 && get<1>(LOE_W[i]) == from + 1) {
-					get<0>(LOE_W[i]) = 0;
-					get<1>(LOE_W[i]) = 0;
-					get<2>(LOE_W[i]) = 0;
+				if (std::get<0>(LOE_W[i]) == to + 1 && std::get<1>(LOE_W[i]) == from + 1) {
+					std::get<0>(LOE_W[i]) = 0;
+					std::get<1>(LOE_W[i]) = 0;
+					std::get<2>(LOE_W[i]) = 0;
 					return;
 				}
 			}
@@ -383,14 +408,11 @@ int Graph::changeEdge(int from, int to, int newWeight)
 	return 0;
 }
 
-char Graph::type_g()
-{
-	return this->type;
-};
+
 //перевод в матрицу смежности
 void Graph::transformToAdjMatrix()
 {
-	if (type == 'C') return;
+	if (gtype == 'C') return;
 	AdjMatx.clear();
 	AdjMatx.resize(n);
 	for (int i = 0; i < AdjMatx.size(); i++)
@@ -401,7 +423,7 @@ void Graph::transformToAdjMatrix()
 			AdjMatx[i][j] = 0;
 		}
 	}
-	switch (type)
+	switch (gtype)
 	{
 	case 'L':
 		transfAdjLToAdjMatx();
@@ -410,12 +432,12 @@ void Graph::transformToAdjMatrix()
 		transfLOEToAdjMatx();
 		break;
 	}
-	type = 'C';
+	gtype = 'C';
 }
 //перевод в список смежности
 void Graph::transformToAdjList()
 {
-	if (type == 'L') return;
+	if (gtype == 'L') return;
 	AdjLst.clear();
 	AdjLst_W.clear();
 
@@ -428,7 +450,7 @@ void Graph::transformToAdjList()
 		AdjLst.resize(n);
 	}
 
-	switch (type)
+	switch (gtype)
 	{
 	case 'C':
 		transfAdjMatxToAdjList();
@@ -438,17 +460,17 @@ void Graph::transformToAdjList()
 		break;
 	}
 
-	type = 'L';
+	gtype = 'L';
 }
 //перевод в список рёбер
 void Graph::transformToListOfEdges()
 {
-	if (type == 'E') return;
+	if (gtype == 'E') return;
 
 	LOE.clear();
 	LOE_W.clear();
 
-	switch (type)
+	switch (gtype)
 	{
 	case 'C':
 		transfAdjMatxToLOE();
@@ -457,18 +479,18 @@ void Graph::transformToListOfEdges()
 		transfAdjListToLOE();
 		break;
 	}
-	type = 'E';
+	gtype = 'E';
 }
 
-void Graph::transfAdjLToAdjMatx() 
+void Graph::transfAdjLToAdjMatx()
 {
-	if (weight) 
+	if (weight)
 	{
-		for (int i = 0; i < AdjLst_W.size(); i++) 
+		for (int i = 0; i < AdjLst_W.size(); i++)
 		{
 			for (int j = 0; j < AdjLst_W[i].size(); j++)
 			{
-				if (AdjLst_W[i][j].first) 
+				if (AdjLst_W[i][j].first)
 				{
 					AdjMatx[i][AdjLst_W[i][j].first - 1] = AdjLst_W[i][j].second;
 					if (!direct)
@@ -477,7 +499,7 @@ void Graph::transfAdjLToAdjMatx()
 			}
 		}
 	}
-	else 
+	else
 	{
 		for (int i = 0; i < AdjLst.size(); i++)
 		{
@@ -494,20 +516,20 @@ void Graph::transfAdjLToAdjMatx()
 	}
 }
 
-void Graph::transfLOEToAdjMatx() 
+void Graph::transfLOEToAdjMatx()
 {
-	if (weight) 
+	if (weight)
 	{
-		for (int i = 0; i < LOE_W.size(); i++) 
+		for (int i = 0; i < LOE_W.size(); i++)
 		{
-			AdjMatx[get<0>(LOE_W[i]) - 1][get<1>(LOE_W[i]) - 1] = get<2>(LOE_W[i]);
+			AdjMatx[std::get<0>(LOE_W[i]) - 1][std::get<1>(LOE_W[i]) - 1] = std::get<2>(LOE_W[i]);
 			if (!direct)
-				AdjMatx[get<1>(LOE_W[i]) - 1][get<0>(LOE_W[i]) - 1] = get<2>(LOE_W[i]);
+				AdjMatx[std::get<1>(LOE_W[i]) - 1][std::get<0>(LOE_W[i]) - 1] = std::get<2>(LOE_W[i]);
 		}
 	}
-	else 
+	else
 	{
-		for (int i = 0; i < LOE.size(); i++) 
+		for (int i = 0; i < LOE.size(); i++)
 		{
 			AdjMatx[LOE[i].first - 1][LOE[i].second - 1] = 1;
 			if (!direct)
@@ -516,24 +538,22 @@ void Graph::transfLOEToAdjMatx()
 	}
 }
 
-
-
-void Graph::transfAdjMatxToAdjList() 
+void Graph::transfAdjMatxToAdjList()
 {
-	if (weight) 
+	if (weight)
 	{
 		for (int i = 0; i < AdjMatx.size(); i++)
 		{
-			for (int j = 0; j < AdjMatx[i].size(); j++) 
+			for (int j = 0; j < AdjMatx[i].size(); j++)
 			{
 				if (AdjMatx[i][j])
-					AdjLst_W[i].push_back(make_pair(j + 1, AdjMatx[i][j]));
+					AdjLst_W[i].push_back(std::make_pair(j + 1, AdjMatx[i][j]));
 			}
 		}
 	}
-	else 
+	else
 	{
-		for (int i = 0; i < AdjMatx.size(); i++) 
+		for (int i = 0; i < AdjMatx.size(); i++)
 		{
 			for (int j = 0; j < AdjMatx[i].size(); j++)
 			{
@@ -544,17 +564,17 @@ void Graph::transfAdjMatxToAdjList()
 	}
 }
 
-void Graph::transfLOEToAdjList() 
+void Graph::transfLOEToAdjList()
 {
-	if (weight) 
+	if (weight)
 	{
 		AdjLst_W.resize(n);
-		for (int i = 0; i < LOE_W.size(); i++) 
+		for (int i = 0; i < LOE_W.size(); i++)
 		{
 			bool next = false;
-			for (int j = 0; j < AdjLst_W[get<0>(LOE_W[i]) - 1].size(); j++)
+			for (int j = 0; j < AdjLst_W[std::get<0>(LOE_W[i]) - 1].size(); j++)
 			{
-				if (AdjLst_W[get<0>(LOE_W[i]) - 1][j].first == get<1>(LOE_W[i])) 
+				if (AdjLst_W[std::get<0>(LOE_W[i]) - 1][j].first == std::get<1>(LOE_W[i]))
 				{
 					next = true;
 					break;
@@ -562,19 +582,19 @@ void Graph::transfLOEToAdjList()
 			}
 			if (next)
 				continue;
-			AdjLst_W[get<0>(LOE_W[i]) - 1].push_back(make_pair(get<1>(LOE_W[i]), get<2>(LOE_W[i])));
+			AdjLst_W[std::get<0>(LOE_W[i]) - 1].push_back(std::make_pair(std::get<1>(LOE_W[i]), std::get<2>(LOE_W[i])));
 			if (!direct) {
-				AdjLst_W[get<1>(LOE_W[i]) - 1].push_back(make_pair(get<0>(LOE_W[i]), get<2>(LOE_W[i])));
+				AdjLst_W[std::get<1>(LOE_W[i]) - 1].push_back(std::make_pair(std::get<0>(LOE_W[i]), std::get<2>(LOE_W[i])));
 			}
 		}
 	}
-	else 
+	else
 	{
 		AdjLst.resize(n);
-		for (int i = 0; i < LOE.size(); i++) 
+		for (int i = 0; i < LOE.size(); i++)
 		{
 			bool next = false;
-			for (int j = 0; j < AdjLst[LOE[i].first - 1].size(); j++) 
+			for (int j = 0; j < AdjLst[LOE[i].first - 1].size(); j++)
 			{
 				if (AdjLst[LOE[i].first - 1][j] == LOE[i].second)
 				{
@@ -586,7 +606,7 @@ void Graph::transfLOEToAdjList()
 				continue;
 
 			AdjLst[LOE[i].first - 1].push_back(LOE[i].second);
-			if (!direct) 
+			if (!direct)
 			{
 				AdjLst[LOE[i].second - 1].push_back(LOE[i].first);
 			}
@@ -596,7 +616,7 @@ void Graph::transfLOEToAdjList()
 
 void Graph::transfAdjMatxToLOE()
 {
-	type = 'E';
+	gtype = 'E';
 	for (int i = 0; i < AdjMatx.size(); i++)
 	{
 		for (int j = 0; j < AdjMatx[i].size(); j++)
@@ -608,9 +628,9 @@ void Graph::transfAdjMatxToLOE()
 	}
 }
 
-void Graph::transfAdjListToLOE() 
+void Graph::transfAdjListToLOE()
 {
-	type = 'E';
+	gtype = 'E';
 	if (weight)
 	{
 		for (int i = 0; i < AdjLst_W.size(); i++)
