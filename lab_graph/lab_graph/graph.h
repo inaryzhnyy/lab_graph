@@ -5,6 +5,8 @@
 #include <tuple>
 #include <algorithm>
 
+//ТEТ Ч индикатор представлени€ список ребер, LOE//ТLТ Ч индикатор представлени€ список смежных вершин AdjList
+//ТCТ Ч индикатор представлени€ матрица смежности AdjMatx
 
 using namespace std;
 class Graph
@@ -13,13 +15,14 @@ public:
 	Graph();
 	~Graph();
 	void readGraph(string fileName);
-	void addEdge(int from, int to, int weight);
+	void addEdge(int from, int to, int weight=0);
 	void removeEdge(int from, int to);
 	int changeEdge(int from, int to, int newWeight);//возвращает старое значение веса ребра
 	void transformToAdjList();
 	void transformToAdjMatrix();
 	void transformToListOfEdges();
-	void writeGraph(std::string fileName);	char type_g();
+	void writeGraph(std::string fileName);
+	char type_g();
 
 private:
 	vector <vector<int>> AdjLst;//список смежных сершин
@@ -50,9 +53,9 @@ private:
 	void writeLOE(FILE&);
 
 	// добавление ребра
-	void addEdgeAdjMatx(int from, int to, int weight);
-	void addEdgeAdjList(int from, int to, int weight);
-	void addEdgeLOE(int from, int to, int weight);
+	void addEdgeAdjMatx(int from, int to, int weight=0);
+	void addEdgeAdjList(int from, int to, int weight=0);
+	void addEdgeLOE(int from, int to, int weight=0);
 	
 	//удаление ребра
 
@@ -61,5 +64,20 @@ private:
 	void subRmEAL(int from, int to);
 	void rmEdgeLOE(int from, int to);
 	void subRmELOE(int from, int to);
+
+	//преобразование
+	
+	//список смежных вершин в матрицу смежнос
+	void transfAdjLToAdjMatx();
+	//список ребер вершин в матрицу смежности
+	void transfLOEToAdjMatx();
+	//матрица в список вершин
+	void transfAdjMatxToAdjList(); 
+	//рЄбра в список вершин
+	void transfLOEToAdjList(); 
+	//—писок смежности в список ребер
+	void transfAdjListToLOE();
+	//ћатрица смежности в список ребер
+	void transfAdjMatxToLOE();
 };
 

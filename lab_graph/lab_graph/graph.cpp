@@ -17,26 +17,26 @@ Graph::~Graph()
 {
 }
 
-void Graph::readGraph(string fileName) 
+void Graph::readGraph(string fileName)
 {
-		FILE *file;
-		file = fopen(fileName.c_str() , "r");
+	FILE *file;
+	file = fopen(fileName.c_str(), "direct");
 
-		fscanf(file, "%c", &type);
+	fscanf(file, "%c", &type);
 
-		switch (type) {
-		case 'E': // список ребер
-			readLOE(*file);
-			break;
-		case 'C': // ћатрица смежности
-			readAdjMatx(*file);
-			break;
-		case 'L': // —писок смежных вершин
-			readAdjList(*file);
-			break;		
-		}
-		fclose(file);
+	switch (type) {
+	case 'E': // список ребер
+		readLOE(*file);
+		break;
+	case 'C': // ћатрица смежности
+		readAdjMatx(*file);
+		break;
+	case 'L': // —писок смежных вершин
+		readAdjList(*file);
+		break;
 	}
+	fclose(file);
+}
 
 void Graph::readAdjMatx(FILE & file) {
 	fscanf(&file, "%d%d%d", &n, &direct, &weight);
@@ -51,7 +51,7 @@ void Graph::readAdjMatx(FILE & file) {
 				m++;
 		}
 	}
-	m = m/2;
+	m = m / 2;
 }
 
 void Graph::readAdjList(FILE & file) {
@@ -141,7 +141,7 @@ void Graph::readLOE(FILE & file) {
 void Graph::writeGraph(string fileName) {
 
 	FILE *file;
-	file = fopen(fileName.c_str(), "w");
+	file = fopen(fileName.c_str(), "weight");
 
 	fprintf(file, "%c", type);
 
@@ -215,12 +215,12 @@ void Graph::writeLOE(FILE & file) {
 
 //добавление ребра
 
-void Graph::addEdge(int from, int to, int weight) 
-{	
+void Graph::addEdge(int from, int to, int weight)
+{
 	if (!weight) weight = 1;
 	--from;
 	--to;
-	switch (type) 
+	switch (type)
 	{
 	case 'C':
 		addEdgeAdjMatx(from, to, weight);
@@ -237,10 +237,10 @@ void Graph::addEdge(int from, int to, int weight)
 
 }
 
-void Graph::addEdgeAdjMatx(int from, int to, int weight) 
+void Graph::addEdgeAdjMatx(int from, int to, int weight)
 {
 	AdjMatx[from][to] = weight;
-	if (!direct) 
+	if (!direct)
 	{
 		AdjMatx[to][from] = weight;
 	}
@@ -259,9 +259,9 @@ void Graph::addEdgeAdjList(int from, int to, int weight) {
 	}
 }
 
-void Graph::addEdgeLOE(int from, int to, int weight) 
+void Graph::addEdgeLOE(int from, int to, int weight)
 {
-	if (weight) 
+	if (weight)
 	{
 		LOE_W.push_back(make_tuple(from + 1, to + 1, weight));
 	}
@@ -382,17 +382,257 @@ int Graph::changeEdge(int from, int to, int newWeight)
 {
 	return 0;
 }
-//перевод в список смежных вершин
-void Graph::transformToAdjList()
-{};
-//перевод в матрицу смежности
-void Graph::transformToAdjMatrix()
-{};
-//перевод в список рЄбер
-void Graph::transformToListOfEdges()
-{};
 
 char Graph::type_g()
-{	
+{
 	return this->type;
 };
+//перевод в матрицу смежности
+void Graph::transformToAdjMatrix()
+{
+	if (type == 'C') return;
+	AdjMatx.clear();
+	AdjMatx.resize(n);
+	for (int i = 0; i < AdjMatx.size(); i++)
+	{
+		AdjMatx[i].resize(n);
+		for (int j = 0; j < AdjMatx[i].size(); j++)
+		{
+			AdjMatx[i][j] = 0;
+		}
+	}
+	switch (type)
+	{
+	case 'L':
+		transfAdjLToAdjMatx();
+		break;
+	case 'E':
+		transfLOEToAdjMatx();
+		break;
+	}
+	type = 'C';
+}
+//перевод в список смежности
+void Graph::transformToAdjList()
+{
+	if (type == 'L') return;
+	AdjLst.clear();
+	AdjLst_W.clear();
+
+	if (weight)
+	{
+		AdjLst_W.resize(n);
+	}
+	else
+	{
+		AdjLst.resize(n);
+	}
+
+	switch (type)
+	{
+	case 'C':
+		transfAdjMatxToAdjList();
+		break;
+	case 'E':
+		transfLOEToAdjList();
+		break;
+	}
+
+	type = 'L';
+}
+//перевод в список рЄбер
+void Graph::transformToListOfEdges()
+{
+	if (type == 'E') return;
+
+	LOE.clear();
+	LOE_W.clear();
+
+	switch (type)
+	{
+	case 'C':
+		transfAdjMatxToLOE();
+		break;
+	case 'L':
+		transfAdjListToLOE();
+		break;
+	}
+	type = 'E';
+}
+
+void Graph::transfAdjLToAdjMatx() 
+{
+	if (weight) 
+	{
+		for (int i = 0; i < AdjLst_W.size(); i++) 
+		{
+			for (int j = 0; j < AdjLst_W[i].size(); j++)
+			{
+				if (AdjLst_W[i][j].first) 
+				{
+					AdjMatx[i][AdjLst_W[i][j].first - 1] = AdjLst_W[i][j].second;
+					if (!direct)
+						AdjMatx[AdjLst_W[i][j].first - 1][i] = AdjLst_W[i][j].second;
+				}
+			}
+		}
+	}
+	else 
+	{
+		for (int i = 0; i < AdjLst.size(); i++)
+		{
+			for (int j = 0; j < AdjLst[i].size(); j++)
+			{
+				if (AdjLst[i][j])
+				{
+					AdjLst[i][AdjLst[i][j] - 1] = 1;
+					if (!direct)
+						AdjMatx[AdjLst[i][j] - 1][i] = 1;
+				}
+			}
+		}
+	}
+}
+
+void Graph::transfLOEToAdjMatx() 
+{
+	if (weight) 
+	{
+		for (int i = 0; i < LOE_W.size(); i++) 
+		{
+			AdjMatx[get<0>(LOE_W[i]) - 1][get<1>(LOE_W[i]) - 1] = get<2>(LOE_W[i]);
+			if (!direct)
+				AdjMatx[get<1>(LOE_W[i]) - 1][get<0>(LOE_W[i]) - 1] = get<2>(LOE_W[i]);
+		}
+	}
+	else 
+	{
+		for (int i = 0; i < LOE.size(); i++) 
+		{
+			AdjMatx[LOE[i].first - 1][LOE[i].second - 1] = 1;
+			if (!direct)
+				AdjMatx[LOE[i].second - 1][LOE[i].first - 1] = 1;
+		}
+	}
+}
+
+
+
+void Graph::transfAdjMatxToAdjList() 
+{
+	if (weight) 
+	{
+		for (int i = 0; i < AdjMatx.size(); i++)
+		{
+			for (int j = 0; j < AdjMatx[i].size(); j++) 
+			{
+				if (AdjMatx[i][j])
+					AdjLst_W[i].push_back(make_pair(j + 1, AdjMatx[i][j]));
+			}
+		}
+	}
+	else 
+	{
+		for (int i = 0; i < AdjMatx.size(); i++) 
+		{
+			for (int j = 0; j < AdjMatx[i].size(); j++)
+			{
+				if (AdjMatx[i][j])
+					AdjLst[i].push_back(j + 1);
+			}
+		}
+	}
+}
+
+void Graph::transfLOEToAdjList() 
+{
+	if (weight) 
+	{
+		AdjLst_W.resize(n);
+		for (int i = 0; i < LOE_W.size(); i++) 
+		{
+			bool next = false;
+			for (int j = 0; j < AdjLst_W[get<0>(LOE_W[i]) - 1].size(); j++)
+			{
+				if (AdjLst_W[get<0>(LOE_W[i]) - 1][j].first == get<1>(LOE_W[i])) 
+				{
+					next = true;
+					break;
+				}
+			}
+			if (next)
+				continue;
+			AdjLst_W[get<0>(LOE_W[i]) - 1].push_back(make_pair(get<1>(LOE_W[i]), get<2>(LOE_W[i])));
+			if (!direct) {
+				AdjLst_W[get<1>(LOE_W[i]) - 1].push_back(make_pair(get<0>(LOE_W[i]), get<2>(LOE_W[i])));
+			}
+		}
+	}
+	else 
+	{
+		AdjLst.resize(n);
+		for (int i = 0; i < LOE.size(); i++) 
+		{
+			bool next = false;
+			for (int j = 0; j < AdjLst[LOE[i].first - 1].size(); j++) 
+			{
+				if (AdjLst[LOE[i].first - 1][j] == LOE[i].second)
+				{
+					next = true;
+					break;
+				}
+			}
+			if (next)
+				continue;
+
+			AdjLst[LOE[i].first - 1].push_back(LOE[i].second);
+			if (!direct) 
+			{
+				AdjLst[LOE[i].second - 1].push_back(LOE[i].first);
+			}
+		}
+	}
+}
+
+void Graph::transfAdjMatxToLOE()
+{
+	type = 'E';
+	for (int i = 0; i < AdjMatx.size(); i++)
+	{
+		for (int j = 0; j < AdjMatx[i].size(); j++)
+		{
+			if (AdjMatx[i][j]) {
+				addEdge(i + 1, j + 1, AdjMatx[i][j]);
+			}
+		}
+	}
+}
+
+void Graph::transfAdjListToLOE() 
+{
+	type = 'E';
+	if (weight)
+	{
+		for (int i = 0; i < AdjLst_W.size(); i++)
+		{
+			for (int j = 0; j < AdjLst_W[i].size(); j++)
+			{
+				if (AdjLst_W[i][j].first)
+					addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < AdjLst.size(); i++)
+		{
+			for (int j = 0; j < AdjLst[i].size(); j++)
+			{
+				if (AdjLst[i][j])
+					addEdge(i + 1, AdjLst[i][j]);
+			}
+		}
+	}
+}
+
+
