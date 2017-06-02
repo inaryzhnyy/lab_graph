@@ -18,18 +18,21 @@ Graph::Graph(int num, char intype)
 	direct = 0;
 	gweight = 1;
 
-	switch (gtype) {
-	case 'C':
+	switch (gtype)
+	{
+	case 'C': 
+	{
 		AdjMatx.resize(n);
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
 				AdjMatx[i].push_back(0);
 			}
 		}
+	}
 		break;
-	case 'L':
-		AdjLst_W.resize(n);
-		break;
+	case 'L': { AdjLst_W.resize(n);break; }
 	case 'E':
 		break;
 	}
