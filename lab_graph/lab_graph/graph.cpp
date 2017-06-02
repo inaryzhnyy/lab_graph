@@ -932,6 +932,9 @@ Graph Graph::getSpaingTreeKruscal()
 	std::vector <std::pair<int, int> > res;
 	DSU n_dsu = DSU(n);
 	
+	
+	sort(LOE_W.begin(), LOE_W.end(), comapre);
+
 	for (int i = 0; i < m; i++) {
 		int first = std::get<0>(LOE_W[i]) - 1,
 			second = std::get<1>(LOE_W[i]) - 1,
@@ -949,3 +952,7 @@ Graph Graph::getSpaingTreeKruscal()
 	return result;
 }
 //дополнительно
+bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second)
+{
+	return std::get<2>(first) < std::get<2>(second);
+}

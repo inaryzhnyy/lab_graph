@@ -9,8 +9,8 @@ int main()
 	Graph res = Graph();
 	temp.readGraph("in1.txt");
 	//temp.writeGraph("out3.txt");
-	temp.transformToAdjList();
-	temp.writeGraph("out2.txt");
+	//temp.transformToAdjList();
+	//temp.writeGraph("out2.txt");
 	//temp.transformToListOfEdges();
 	//temp.writeGraph("out3.txt");
 	//temp.transformToAdjMatrix();
