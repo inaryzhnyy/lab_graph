@@ -10,9 +10,9 @@ int main()
 	//temp.writeGraph("out3.txt");
 	//temp.transformToAdjList();
 	//temp.writeGraph("out2.txt");
-	//temp.transformToListOfEdges();
-	//temp.writeGraph("out3.txt");
-	temp.transformToAdjMatrix();
-	temp.writeGraph("out1.txt");
+	temp.transformToListOfEdges();
+	temp.writeGraph("out3.txt");
+	//temp.transformToAdjMatrix();
+	//temp.writeGraph("out1.txt");
 	return 0;
 }

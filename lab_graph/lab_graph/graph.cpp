@@ -616,42 +616,81 @@ void Graph::transfLOEToAdjList()
 void Graph::transfAdjMatxToLOE()
 {
 	gtype = 'E';
+	int k = m;
 	for (int i = 0; i < AdjMatx.size(); i++)
 	{
 		for (int j = 0; j < AdjMatx[i].size(); j++)
 		{
-			if (AdjMatx[i][j]) {
-				addEdge(i + 1, j + 1, AdjMatx[i][j]);
+			if (AdjMatx[i][j]) 
+			{
+				if (direct) {
+					addEdge(i + 1, j + 1, AdjMatx[i][j]);
+				}else
+				{
+					if(i<=j)
+					addEdge(i + 1, j + 1, AdjMatx[i][j]);
+				}
 			}
 		}
 	}
+	if (direct) m = k; else { m -= k; };
 }
 
 void Graph::transfAdjListToLOE()
 {
 	gtype = 'E';
-	if (gweight)
+	int k = m;
+	if (direct)//in direct
 	{
-		for (int i = 0; i < AdjLst_W.size(); i++)
+		if (gweight)
 		{
-			for (int j = 0; j < AdjLst_W[i].size(); j++)
+			for (int i = 0; i < AdjLst_W.size(); i++)
 			{
-				if (AdjLst_W[i][j].first)
-					addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
+				for (int j = 0; j < AdjLst_W[i].size(); j++)
+				{
+					if (AdjLst_W[i][j].first)
+						addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
+				}
 			}
 		}
-	}
-	else
-	{
-		for (int i = 0; i < AdjLst.size(); i++)
+		else
 		{
-			for (int j = 0; j < AdjLst[i].size(); j++)
+			for (int i = 0; i < AdjLst.size(); i++)
 			{
-				if (AdjLst[i][j])
-					addEdge(i + 1, AdjLst[i][j]);
+				for (int j = 0; j < AdjLst[i].size(); j++)
+				{
+					if (AdjLst[i][j])
+						addEdge(i + 1, AdjLst[i][j]);
+				}
 			}
 		}
+		m = k;
 	}
+	else {
+		if (gweight)
+		{
+			for (int i = 0; i < AdjLst_W.size(); i++)
+			{
+				for (int j = 0; j < AdjLst_W[i].size(); j++)
+				{
+					if ((AdjLst_W[i][j].first) && (i <= j))
+						addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < AdjLst.size(); i++)
+			{
+				for (int j = 0; j < AdjLst[i].size(); j++)
+				{
+					if ((AdjLst[i][j]) && (i<=j))
+						addEdge(i + 1, AdjLst[i][j]);
+				}
+			}
+		}
+		m = m - k;
+	};
 }
 
 
