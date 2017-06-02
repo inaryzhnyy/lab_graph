@@ -1,7 +1,7 @@
 #include "graph.h"
 
 //using namespace std;
-
+bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second);
 Graph::Graph()
 {
 	gtype = 0;
@@ -935,7 +935,7 @@ Graph Graph::getSpaingTreeKruscal()
 	
 	sort(LOE_W.begin(), LOE_W.end(), comapre);
 
-	for (int i = 0; i < m; i++) {
+	for (int i = 0; i < LOE_W.size(); i++) {
 		int first = std::get<0>(LOE_W[i]) - 1,
 			second = std::get<1>(LOE_W[i]) - 1,
 			weight = std::get<2>(LOE_W[i]);
