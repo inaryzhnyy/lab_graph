@@ -91,5 +91,10 @@ private:
 	int changeAdjMatx(int from, int to, int weight=0);
 	int changeAdjList(int from, int to, int weight=0);
 	int changeLOE(int from, int to, int weight=0);
+
+	int getmax();
+	int getmaxMatx(int result);
+	int getmaxAList(int result);
+	int getmaxLOE(int result);
 };
 

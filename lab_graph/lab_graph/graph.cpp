@@ -709,7 +709,7 @@ int Graph::changeEdge(int from, int to, int weight) {
 }
 
 int Graph::changeAdjMatx(int from, int to, int weight) {
-	int old_w = AdjMatx[from][to];
+	int origin_weight = AdjMatx[from][to];
 
 	if (AdjMatx[from][to]) {
 		AdjMatx[from][to] = weight;
@@ -718,16 +718,16 @@ int Graph::changeAdjMatx(int from, int to, int weight) {
 		}
 	}
 
-	return old_w;
+	return origin_weight;
 }
 
 int Graph::changeAdjList(int from, int to, int weight) {
-	int old_w = 0;
+	int origin_weight = 0;
 
 	if (gweight) {
 		for (int i = 0; i < AdjLst_W[from].size(); i++) {
 			if (AdjLst_W[from][i].first == to + 1) {
-				old_w = AdjLst_W[from][i].second;
+				origin_weight = AdjLst_W[from][i].second;
 				AdjLst_W[from][i].second = weight;
 			}
 		}
@@ -740,16 +740,16 @@ int Graph::changeAdjList(int from, int to, int weight) {
 		}
 	}
 
-	return old_w;
+	return origin_weight;
 }
 
-int Graph::changeLOE(int from, int to, int weight) {
-	int old_w = 0;
-
+int Graph::changeLOE(int from, int to, int weight) 
+{
+	int origin_weight = 0;
 	if (gweight) {
 		for (int i = 0; i < LOE_W.size(); i++) {
 			if (std::get<0>(LOE_W[i]) == from + 1 && std::get<1>(LOE_W[i]) == to + 1) {
-				old_w = std::get<2>(LOE_W[i]);
+				origin_weight = std::get<2>(LOE_W[i]);
 				std::get<2>(LOE_W[i]) = weight;
 			}
 			if (!direct) {
@@ -759,6 +759,55 @@ int Graph::changeLOE(int from, int to, int weight) {
 			}
 		}
 	}
-	return old_w;
+	return origin_weight;
 }
 
+int Graph::getmax()
+{
+	int result = 0;
+	switch (gtype)
+	{
+	case 'C': {return getmaxMatx(result);};
+	case 'L': {return getmaxMatx(result);};
+	case 'E': {return getmaxLOE(result);};
+	}
+}
+int Graph::getmaxMatx(int result)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (AdjMatx[i][j] > result)
+			{
+				result = AdjMatx[i][j];
+			}
+		}
+	}
+	return result;
+}
+int Graph::getmaxAList(int result) 
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < AdjLst_W[i].size(); j++)
+		{
+			if (AdjLst_W[i][j].second > result)
+			{
+				result = AdjLst_W[i][j].second;
+			}
+		}
+	}
+	return result;
+}
+int Graph::getmaxLOE(int result)
+{
+	for (int i = 0; i < LOE_W.size(); i++)
+	{
+		if (std::get<2>(LOE_W[i]) > result)
+		{
+			result = std::get<2>(LOE_W[i]);
+		}
+	}
+	return result;
+}
