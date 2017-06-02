@@ -6,7 +6,7 @@ Graph::Graph()
 {
 	gtype = 0;
 	direct = 0;
-	weight = 0;
+	gweight = 0;
 	n = m = 0;
 }
 
@@ -16,7 +16,7 @@ Graph::Graph(int num, char intype)
 	m = 0;
 	gtype = intype;
 	direct = 0;
-	weight = 1;
+	gweight = 1;
 
 	switch (gtype) {
 	case 'C':
@@ -61,7 +61,7 @@ void Graph::readGraph(std::string fileName)
 }
 
 void Graph::readAdjMatx(FILE & file) {
-	fscanf(&file, "%d%d%d", &n, &direct, &weight);
+	fscanf(&file, "%d%d%d", &n, &direct, &gweight);
 
 	int k;
 	AdjMatx.resize(n);
@@ -81,7 +81,7 @@ void Graph::readAdjList(FILE & file) {
 	const int max_el = 200000;
 	char str[max_el];
 
-	fscanf(&file, "%d%d%d", &n, &direct, &weight);
+	fscanf(&file, "%d%d%d", &n, &direct, &gweight);
 	fgets(str, max_el, &file);
 
 	AdjLst.resize(n);
@@ -107,7 +107,7 @@ void Graph::readAdjList(FILE & file) {
 		}
 		if (arr[arr.size() - 1] == "")
 			arr.pop_back();
-		if (weight) {
+		if (gweight) {
 			for (int j = 0; j < arr.size(); j += 2) {
 				if (stoi(arr[j])) {
 					AdjLst_W[i].push_back(std::make_pair(stoi(arr[j]), stoi(arr[j + 1])));
@@ -128,10 +128,10 @@ void Graph::readAdjList(FILE & file) {
 }
 
 void Graph::readLOE(FILE & file) {
-	fscanf(&file, "%d%d%d%d", &n, &m, &direct, &weight);
+	fscanf(&file, "%d%d%d%d", &n, &m, &direct, &gweight);
 
 	int firstv, secondv, weightv;
-	if (weight) {
+	if (gweight) {
 		while (!feof(&file)) {
 			fscanf(&file, "%d%d%d", &firstv, &secondv, &weightv);
 			LOE_W.push_back(std::make_tuple(firstv, secondv, weightv));
@@ -186,8 +186,8 @@ void Graph::writeGraph(std::string fileName) {
 }
 
 void Graph::writeAdjMatx(FILE & file) {
-	fprintf(&file, " %d\n%d %d\n", n, direct, weight);
-
+	fprintf(&file, " %d\n%d %d\n", n, direct, gweight);
+	
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			fprintf(&file, "%d ", AdjMatx[i][j]);
@@ -197,9 +197,9 @@ void Graph::writeAdjMatx(FILE & file) {
 }
 
 void Graph::writeAdjList(FILE & file) {
-	fprintf(&file, " %d\n%d %d\n", n, direct, weight);
+	fprintf(&file, " %d\n%d %d\n", n, direct, gweight);
 
-	if (weight) {
+	if (gweight) {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < AdjLst_W[i].size(); j++) {
 				if (AdjLst_W[i][j].first && AdjLst_W[i][j].second)
@@ -220,9 +220,9 @@ void Graph::writeAdjList(FILE & file) {
 }
 
 void Graph::writeLOE(FILE & file) {
-	fprintf(&file, " %d %d\n%d %d\n", n, m, direct, weight);
+	fprintf(&file, " %d %d\n%d %d\n", n, m, direct, gweight);
 
-	if (weight) {
+	if (gweight) {
 		for (int i = 0; i < m; i++) {
 			if (std::get<0>(LOE_W[i]) && std::get<1>(LOE_W[i]))
 				fprintf(&file, "%d %d %d\n", std::get<0>(LOE_W[i]), std::get<1>(LOE_W[i]), std::get<2>(LOE_W[i]));
@@ -270,7 +270,7 @@ void Graph::addEdgeAdjMatx(int from, int to, int weight)
 }
 
 void Graph::addEdgeAdjList(int from, int to, int weight) {
-	if (weight) {
+	if (gweight) {
 		AdjLst_W[from].push_back(std::make_pair(to + 1, weight));
 		if (!direct)
 			AdjLst_W[to].push_back(std::make_pair(from + 1, weight));
@@ -284,7 +284,7 @@ void Graph::addEdgeAdjList(int from, int to, int weight) {
 
 void Graph::addEdgeLOE(int from, int to, int weight)
 {
-	if (weight)
+	if (gweight)
 	{
 		LOE_W.push_back(std::make_tuple(from + 1, to + 1, weight));
 	}
@@ -326,7 +326,7 @@ void subRmEAL(int from, int to) {
 
 void Graph::rmEdgeAdjList(int from, int to)
 {
-	if (weight)
+	if (gweight)
 	{
 		for (int i = 0; i < AdjLst_W[from].size(); i++)
 		{
@@ -366,7 +366,7 @@ void Graph::rmEdgeAdjList(int from, int to)
 }
 
 void Graph::rmEdgeLOE(int from, int to) {
-	if (weight) {
+	if (gweight) {
 		for (int i = 0; i < LOE_W.size(); i++) {
 			if (std::get<0>(LOE_W[i]) == from + 1 && std::get<1>(LOE_W[i]) == to + 1) {
 				std::get<0>(LOE_W[i]) = 0;
@@ -401,7 +401,6 @@ void Graph::rmEdgeLOE(int from, int to) {
 		}
 	}
 }
-
 
 int Graph::changeEdge(int from, int to, int newWeight)
 {
@@ -441,7 +440,7 @@ void Graph::transformToAdjList()
 	AdjLst.clear();
 	AdjLst_W.clear();
 
-	if (weight)
+	if (gweight)
 	{
 		AdjLst_W.resize(n);
 	}
@@ -484,7 +483,7 @@ void Graph::transformToListOfEdges()
 
 void Graph::transfAdjLToAdjMatx()
 {
-	if (weight)
+	if (gweight)
 	{
 		for (int i = 0; i < AdjLst_W.size(); i++)
 		{
@@ -507,7 +506,7 @@ void Graph::transfAdjLToAdjMatx()
 			{
 				if (AdjLst[i][j])
 				{
-					AdjLst[i][AdjLst[i][j] - 1] = 1;
+					AdjMatx[i][AdjLst[i][j] - 1] = 1;
 					if (!direct)
 						AdjMatx[AdjLst[i][j] - 1][i] = 1;
 				}
@@ -518,7 +517,7 @@ void Graph::transfAdjLToAdjMatx()
 
 void Graph::transfLOEToAdjMatx()
 {
-	if (weight)
+	if (gweight)
 	{
 		for (int i = 0; i < LOE_W.size(); i++)
 		{
@@ -540,7 +539,7 @@ void Graph::transfLOEToAdjMatx()
 
 void Graph::transfAdjMatxToAdjList()
 {
-	if (weight)
+	if (gweight)
 	{
 		for (int i = 0; i < AdjMatx.size(); i++)
 		{
@@ -566,7 +565,7 @@ void Graph::transfAdjMatxToAdjList()
 
 void Graph::transfLOEToAdjList()
 {
-	if (weight)
+	if (gweight)
 	{
 		AdjLst_W.resize(n);
 		for (int i = 0; i < LOE_W.size(); i++)
@@ -631,7 +630,7 @@ void Graph::transfAdjMatxToLOE()
 void Graph::transfAdjListToLOE()
 {
 	gtype = 'E';
-	if (weight)
+	if (gweight)
 	{
 		for (int i = 0; i < AdjLst_W.size(); i++)
 		{

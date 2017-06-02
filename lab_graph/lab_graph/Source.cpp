@@ -6,11 +6,11 @@
 int main()
 {
 	Graph temp = Graph();
-	temp.readGraph("in2.txt");
-	temp.writeGraph("out3.txt");
-	temp.transformToAdjList();
-	temp.writeGraph("out2.txt");
-	//transformToListOfEdges();
+	temp.readGraph("in3.txt");
+	//temp.writeGraph("out3.txt");
+	//temp.transformToAdjList();
+	//temp.writeGraph("out2.txt");
+	//temp.transformToListOfEdges();
 	//temp.writeGraph("out3.txt");
 	temp.transformToAdjMatrix();
 	temp.writeGraph("out1.txt");
