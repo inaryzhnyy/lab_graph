@@ -101,5 +101,7 @@ private:
 	int getmaxLOE(int result);
 
 	Graph PrimMatx();
+	Graph PrimAdjList();
+	
 };
 

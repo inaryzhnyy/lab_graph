@@ -187,7 +187,7 @@ void Graph::writeGraph(std::string fileName) {
 
 void Graph::writeAdjMatx(FILE & file) {
 	fprintf(&file, " %d\n%d %d\n", n, direct, gweight);
-	
+
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			fprintf(&file, "%d ", AdjMatx[i][j]);
@@ -615,14 +615,15 @@ void Graph::transfAdjMatxToLOE()
 	{
 		for (int j = 0; j < AdjMatx[i].size(); j++)
 		{
-			if (AdjMatx[i][j]) 
+			if (AdjMatx[i][j])
 			{
 				if (direct) {
 					addEdge(i + 1, j + 1, AdjMatx[i][j]);
-				}else
+				}
+				else
 				{
-					if(i<=j)
-					addEdge(i + 1, j + 1, AdjMatx[i][j]);
+					if (i <= j)
+						addEdge(i + 1, j + 1, AdjMatx[i][j]);
 				}
 			}
 		}
@@ -678,7 +679,7 @@ void Graph::transfAdjListToLOE()
 			{
 				for (int j = 0; j < AdjLst[i].size(); j++)
 				{
-					if ((AdjLst[i][j]) && (i<=j))
+					if ((AdjLst[i][j]) && (i <= j))
 						addEdge(i + 1, AdjLst[i][j]);
 				}
 			}
@@ -743,7 +744,7 @@ int Graph::changeAdjList(int from, int to, int weight) {
 	return origin_weight;
 }
 
-int Graph::changeLOE(int from, int to, int weight) 
+int Graph::changeLOE(int from, int to, int weight)
 {
 	int origin_weight = 0;
 	if (gweight) {
@@ -767,9 +768,9 @@ int Graph::getmax()
 	int result = 0;
 	switch (gtype)
 	{
-	case 'C': {return getmaxMatx(result);};
-	case 'L': {return getmaxMatx(result);};
-	case 'E': {return getmaxLOE(result);};
+	case 'C': {return getmaxMatx(result); };
+	case 'L': {return getmaxMatx(result); };
+	case 'E': {return getmaxLOE(result); };
 	}
 }
 int Graph::getmaxMatx(int result)
@@ -786,7 +787,7 @@ int Graph::getmaxMatx(int result)
 	}
 	return result;
 }
-int Graph::getmaxAList(int result) 
+int Graph::getmaxAList(int result)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -812,7 +813,28 @@ int Graph::getmaxLOE(int result)
 	return result;
 }
 Graph Graph::getSpaingTreePrima()
-{}
+{
+	switch (gtype)
+	{
+	case 'C':
+	{
+		return PrimMatx();
+		break;
+	}
+	case 'L':
+	{
+		return PrimAdjList();
+		break;
+	}
+	case 'E':
+	{
+		this->transformToAdjList();
+		return PrimAdjList();
+		break; 
+	}
+	}
+	return *this;
+}
 Graph Graph::PrimMatx()
 {
 	Graph result_graph = Graph(n, gtype);
@@ -844,4 +866,45 @@ Graph Graph::PrimMatx()
 	}
 	return result_graph;
 }
+Graph Graph::PrimAdjList()
+{
+	Graph result_graph = Graph(n, gtype);
+	std::vector <bool> visited(n, false);			 // посещенные вершины
+	std::vector <int> min_edge(n, getmax() + 1);     // мин ребра
+	std::vector <int> selected(n, -1);				 // вершины
+	std::set <std::pair<int, int>> newset;
+	int prim = 0;
+	while (prim < n) {
+		min_edge[prim] = 0;
+		newset.insert(std::make_pair(0, prim));
 
+		while (!newset.empty()) {
+			int v = newset.begin()->second;
+			newset.erase(newset.begin());
+			visited[v] = true;
+
+			for (size_t j = 0; j < AdjLst_W[v].size(); j++) 
+			{
+				int to = AdjLst_W[v][j].first - 1,
+					sec = AdjLst_W[v][j].second;
+				if (!visited[to] && sec < min_edge[to]) 
+				{
+					newset.erase(std::make_pair(min_edge[to], to));
+					min_edge[to] = sec;
+					selected[to] = v;
+					newset.insert(std::make_pair(min_edge[to], to));
+				}
+			}
+		}
+
+		while (prim < n && visited[prim]) {
+			prim++;
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		if (selected[i] != -1) {
+			result_graph.addEdge(selected[i] + 1, i + 1, min_edge[i]);
+		}
+	}
+	return result_graph;
+}
