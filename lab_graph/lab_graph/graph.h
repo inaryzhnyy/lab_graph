@@ -86,5 +86,10 @@ private:
 	void transfAdjListToLOE();
 	//Матрица смежности в список ребер- in1/ou3
 	void transfAdjMatxToLOE();
+
+	//change
+	int changeAdjMatx(int from, int to, int weight=0);
+	int changeAdjList(int from, int to, int weight=0);
+	int changeLOE(int from, int to, int weight=0);
 };
 

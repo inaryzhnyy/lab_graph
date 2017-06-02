@@ -42,7 +42,7 @@ Graph::~Graph()
 void Graph::readGraph(std::string fileName)
 {
 	FILE *file;
-	file = fopen(fileName.c_str(), "r");
+	file = fopen(fileName.c_str(), "direct");
 
 	fscanf(file, "%c", &gtype);
 
@@ -402,12 +402,6 @@ void Graph::rmEdgeLOE(int from, int to) {
 	}
 }
 
-int Graph::changeEdge(int from, int to, int newWeight)
-{
-	return 0;
-}
-
-
 //перевод в матрицу смежности
 void Graph::transformToAdjMatrix()
 {
@@ -693,4 +687,78 @@ void Graph::transfAdjListToLOE()
 	};
 }
 
+int Graph::changeEdge(int from, int to, int weight) {
+
+	--from;
+	--to;
+
+	switch (gtype)
+	{
+	case 'C':
+		return changeAdjMatx(from, to, weight);
+		break;
+	case 'L':
+		return changeAdjList(from, to, weight);
+		break;
+	case 'E':
+		return changeLOE(from, to, weight);
+		break;
+	}
+
+	return 0;
+}
+
+int Graph::changeAdjMatx(int from, int to, int weight) {
+	int old_w = AdjMatx[from][to];
+
+	if (AdjMatx[from][to]) {
+		AdjMatx[from][to] = weight;
+		if (!direct) {
+			AdjMatx[to][from] = weight;
+		}
+	}
+
+	return old_w;
+}
+
+int Graph::changeAdjList(int from, int to, int weight) {
+	int old_w = 0;
+
+	if (gweight) {
+		for (int i = 0; i < AdjLst_W[from].size(); i++) {
+			if (AdjLst_W[from][i].first == to + 1) {
+				old_w = AdjLst_W[from][i].second;
+				AdjLst_W[from][i].second = weight;
+			}
+		}
+		if (!direct) {
+			for (int i = 0; i < AdjLst_W[to].size(); i++) {
+				if (AdjLst_W[to][i].first == from + 1) {
+					AdjLst_W[to][i].second = weight;
+				}
+			}
+		}
+	}
+
+	return old_w;
+}
+
+int Graph::changeLOE(int from, int to, int weight) {
+	int old_w = 0;
+
+	if (gweight) {
+		for (int i = 0; i < LOE_W.size(); i++) {
+			if (std::get<0>(LOE_W[i]) == from + 1 && std::get<1>(LOE_W[i]) == to + 1) {
+				old_w = std::get<2>(LOE_W[i]);
+				std::get<2>(LOE_W[i]) = weight;
+			}
+			if (!direct) {
+				if (std::get<0>(LOE_W[i]) == to + 1 && std::get<1>(LOE_W[i]) == from + 1) {
+					std::get<2>(LOE_W[i]) = weight;
+				}
+			}
+		}
+	}
+	return old_w;
+}
 
