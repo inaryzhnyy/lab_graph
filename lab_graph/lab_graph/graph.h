@@ -4,10 +4,11 @@
 #include <vector>
 #include <fstream>
 #include <tuple>
-//#include <algorithm>
+#include <algorithm>
 #include <set>
-//#include <queue>
-//#include <stack>
+
+#include "DSU.h"
+
 
 //ТEТ Ч индикатор представлени€ список ребер, LOE//ТLТ Ч индикатор представлени€ список смежных вершин AdjList
 //ТCТ Ч индикатор представлени€ матрица смежности AdjMatx
@@ -102,6 +103,9 @@ private:
 
 	Graph PrimMatx();
 	Graph PrimAdjList();
+
+	//
+	void reverseTransform(char type);
 	
 };
 

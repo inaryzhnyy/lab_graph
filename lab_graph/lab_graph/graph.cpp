@@ -815,6 +815,7 @@ int Graph::getmaxLOE(int result)
 	}
 	return result;
 }
+//Алгоритм Прима
 Graph Graph::getSpaingTreePrima()
 {
 	switch (gtype)
@@ -911,3 +912,40 @@ Graph Graph::PrimAdjList()
 	}
 	return result_graph;
 }
+void Graph::reverseTransform(char type)
+{
+	switch (type)
+	{
+	case 'C': {this->transformToAdjMatrix(); break; }
+	case 'L': {this->transformToAdjList(); break; }
+	case 'E': {this->transformToListOfEdges(); break; }
+	}
+}
+
+
+Graph Graph::getSpaingTreeKruscal()
+{
+	char old_type = gtype;	
+	this->transformToListOfEdges();
+	Graph result = Graph(n, gtype);
+	int val = 0;
+	std::vector <std::pair<int, int> > res;
+	DSU n_dsu = DSU(n);
+	
+	for (int i = 0; i < m; i++) {
+		int first = std::get<0>(LOE_W[i]) - 1,
+			second = std::get<1>(LOE_W[i]) - 1,
+			weight = std::get<2>(LOE_W[i]);
+
+		if (n_dsu.find(first) != n_dsu.find(second)) 
+		{
+			val += weight;
+			res.push_back(std::make_pair(first, second));
+			n_dsu.unite(first, second);
+			result.addEdge(first + 1, second + 1, weight);
+		}
+	}
+	reverseTransform(old_type);
+	return result;
+}
+//
