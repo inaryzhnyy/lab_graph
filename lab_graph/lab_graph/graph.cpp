@@ -45,7 +45,7 @@ Graph::~Graph()
 void Graph::readGraph(std::string fileName)
 {
 	FILE *file;
-	file = fopen(fileName.c_str(), "direct");
+	file = fopen(fileName.c_str(), "r");
 
 	fscanf(file, "%c", &gtype);
 
@@ -772,7 +772,7 @@ int Graph::getmax()
 	switch (gtype)
 	{
 	case 'C': {return getmaxMatx(result); };
-	case 'L': {return getmaxMatx(result); };
+	case 'L': {return getmaxAList(result); };
 	case 'E': {return getmaxLOE(result); };
 	}
 }
@@ -948,4 +948,4 @@ Graph Graph::getSpaingTreeKruscal()
 	reverseTransform(old_type);
 	return result;
 }
-//
+//дополнительно
