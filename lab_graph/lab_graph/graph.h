@@ -28,6 +28,9 @@ public:
 	void transformToListOfEdges();
 	void writeGraph(std::string fileName);
 	//char type_g();
+	Graph getSpaingTreePrima();
+	Graph getSpaingTreeKruscal();
+	Graph getSpaingTreeBoruvka();
 
 private:
 	std::vector <std::vector<int>> AdjLst;//список смежных сершин
@@ -96,5 +99,7 @@ private:
 	int getmaxMatx(int result);
 	int getmaxAList(int result);
 	int getmaxLOE(int result);
+
+	Graph PrimMatx();
 };
 

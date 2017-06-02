@@ -811,3 +811,37 @@ int Graph::getmaxLOE(int result)
 	}
 	return result;
 }
+Graph Graph::getSpaingTreePrima()
+{}
+Graph Graph::PrimMatx()
+{
+	Graph result_graph = Graph(n, gtype);
+	std::vector <bool> visited(n, false);			 // посещенные вершины
+	std::vector <int> min_edge(n, getmax() + 1);     // мин ребра
+	std::vector <int> selected(n, -1);				 // вершины
+	min_edge[0] = 0;
+
+	for (int i = 0; i < n; i++) {
+		int v = -1;
+		for (int j = 0; j < n; j++) {
+			if (!visited[j] && (v == -1 || min_edge[j] < min_edge[v])) {
+				v = j;
+			}
+		}
+		visited[v] = true;
+		for (int to = 0; to < n; to++) {
+			if (!visited[to] && AdjMatx[v][to] != 0 && AdjMatx[v][to] < min_edge[to]) {
+				min_edge[to] = AdjMatx[v][to];
+				selected[to] = v;
+			}
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		if (selected[i] != -1) {
+			result_graph.addEdge(selected[i] + 1, i + 1, AdjMatx[selected[i]][i]);
+		}
+	}
+	return result_graph;
+}
+
