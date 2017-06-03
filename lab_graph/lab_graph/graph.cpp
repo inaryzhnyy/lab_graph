@@ -127,7 +127,7 @@ void Graph::readAdjList(FILE & file) {
 			}
 		}
 	}
-	m /= 2;
+	m = m / 2;
 }
 
 void Graph::readLOE(FILE & file) {
@@ -839,6 +839,7 @@ Graph Graph::getSpaingTreePrima()
 	}
 	return *this;
 }
+
 Graph Graph::PrimMatx()
 {
 	Graph result_graph = Graph(n, gtype);
@@ -862,12 +863,15 @@ Graph Graph::PrimMatx()
 			}
 		}
 	}
-
+	int val = 0;
 	for (int i = 0; i < n; i++) {
 		if (selected[i] != -1) {
 			result_graph.addEdge(selected[i] + 1, i + 1, AdjMatx[selected[i]][i]);
+			val += AdjMatx[selected[i]][i];
+
 		}
 	}
+	//printf("%d \n", val);
 	return result_graph;
 }
 Graph Graph::PrimAdjList()
@@ -905,11 +909,15 @@ Graph Graph::PrimAdjList()
 			prim++;
 		}
 	}
+	int val = 0;
 	for (int i = 0; i < n; i++) {
 		if (selected[i] != -1) {
 			result_graph.addEdge(selected[i] + 1, i + 1, min_edge[i]);
+			val += min_edge[i];
+
 		}
 	}
+	//printf("%d \n", val);
 	return result_graph;
 }
 void Graph::reverseTransform(char type)
@@ -931,7 +939,6 @@ Graph Graph::getSpaingTreeKruscal()
 	std::vector <std::pair<int, int> > res;
 	DSU n_dsu = DSU(n);
 
-
 	sort(LOE_W.begin(), LOE_W.end(), comapre);
 
 	for (int i = 0; i < LOE_W.size(); i++) {
@@ -941,12 +948,14 @@ Graph Graph::getSpaingTreeKruscal()
 
 		if (n_dsu.find(first) != n_dsu.find(second))
 		{
-			val += weight;
 			res.push_back(std::make_pair(first, second));
 			n_dsu.unite(first, second);
 			result.addEdge(first + 1, second + 1, weight);
+			val += weight;
+
 		}
 	}
+	//printf("%d \n", val);
 	reverseTransform(old_type);
 	return result;
 }
@@ -1016,11 +1025,13 @@ Graph Graph::BoruvkaMatx()
 			{
 				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
 				val += min_edge[i];
+
 				dsu.unite(i, selected[i]);
 				comp++;
 			}
 		}
 	}
+	//printf("%d \n", val);
 	return result;
 }
 
@@ -1035,23 +1046,23 @@ Graph Graph::BoruvkaAList()
 		int breaker = n;
 		std::vector <int> min_edge(n, getmax() + 1);
 		std::vector <int> selected(n, -1);
-		{
-			for (int i = 0; i < AdjLst_W.size(); i++) {
-				for (int j = 0; j < AdjLst_W[i].size(); j++) {
-					int first = dsu.find(i);
-					int second = dsu.find(AdjLst_W[i][j].first - 1);
-					int weight = AdjLst_W[i][j].second;
-					if (first != second) {
-						if (min_edge[first] > weight) {
-							min_edge[first] = weight;
-							selected[first] = second;
-							breaker--;
-						}
-						if (min_edge[second] > weight) {
-							min_edge[second] = weight;
-							selected[second] = first;
-							breaker--;
-						}
+
+		for (int i = 0; i < AdjLst_W.size(); i++) {
+			for (int j = 0; j < AdjLst_W[i].size(); j++) {
+				int first = dsu.find(i);
+				int second = dsu.find(AdjLst_W[i][j].first - 1);
+				int weight = AdjLst_W[i][j].second;
+				if (first != second) {
+					if (min_edge[first] > weight)
+					{
+						min_edge[first] = weight;
+						selected[first] = second;
+						breaker--;
+					}
+					if (min_edge[second] > weight) {
+						min_edge[second] = weight;
+						selected[second] = first;
+						breaker--;
 					}
 				}
 			}
@@ -1070,12 +1081,52 @@ Graph Graph::BoruvkaAList()
 			}
 		}
 	}
+	//printf("%d \n", val);
 	return result;
 }
 
 Graph Graph::BoruvkaLOE()
 {
+	Graph result = Graph(n, gtype);
+	DSU dsu = DSU(n);
+	int val = 0;
+	int max = getmax() + 1;
+	int comp = 0;
+	while (comp < n - 1) {
+		int breaker = n;
+		std::vector <int> min_edge(n, getmax() + 1);
+		std::vector <int> selected(n, -1);
+		for (int i = 0; i < LOE_W.size(); i++) {
+			int first = dsu.find(std::get<0>(LOE_W[i]) - 1);
+			int second = dsu.find(std::get<1>(LOE_W[i]) - 1);
+			int weight = std::get<2>(LOE_W[i]);
+			if (first != second) {
+				if (min_edge[first] > weight) {
+					min_edge[first] = weight;
+					selected[first] = second;
+				}
+				if (min_edge[second] > weight) {
+					min_edge[second] = weight;
+					selected[second] = first;
+				}
+			}
+		}
+		if (!breaker)
+			break;
 
+		for (int i = 0; i < min_edge.size(); i++)
+		{
+			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
+			{
+				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
+				val += min_edge[i];
+				dsu.unite(i, selected[i]);
+				comp++;
+			}
+		}
+	}
+	//printf("%d \n", val);
+	return result;
 }
 //дополнительно
 bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second)
