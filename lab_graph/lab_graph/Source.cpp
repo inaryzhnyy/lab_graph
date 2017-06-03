@@ -7,7 +7,7 @@ int main()
 {
 	Graph temp = Graph();
 	Graph res = Graph();
-	temp.readGraph("in3.txt");
+	temp.readGraph("in1.txt");
 	//temp.writeGraph("out3.txt");
 	//temp.transformToAdjList();
 	//temp.writeGraph("out2.txt");
@@ -17,7 +17,7 @@ int main()
 	//temp.writeGraph("out1.txt");
 	//res = temp.getSpaingTreePrima();	
 	//temp.writeGraph("out1.txt");
-	res = temp.getSpaingTreeKruscal();
+	res = temp.getSpaingTreeBoruvka();
 	res.transformToAdjMatrix();
 	res.writeGraph("out4.txt");
 	return 0;

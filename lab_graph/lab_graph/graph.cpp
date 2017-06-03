@@ -20,7 +20,7 @@ Graph::Graph(int num, char intype)
 
 	switch (gtype)
 	{
-	case 'C': 
+	case 'C':
 	{
 		AdjMatx.resize(n);
 		for (int i = 0; i < n; i++)
@@ -31,8 +31,8 @@ Graph::Graph(int num, char intype)
 			}
 		}
 	}
-		break;
-	case 'L': { AdjLst_W.resize(n);break; }
+	break;
+	case 'L': { AdjLst_W.resize(n); break; }
 	case 'E':
 		break;
 	}
@@ -834,7 +834,7 @@ Graph Graph::getSpaingTreePrima()
 	{
 		this->transformToAdjList();
 		return PrimAdjList();
-		break; 
+		break;
 	}
 	}
 	return *this;
@@ -887,11 +887,11 @@ Graph Graph::PrimAdjList()
 			newset.erase(newset.begin());
 			visited[v] = true;
 
-			for (size_t j = 0; j < AdjLst_W[v].size(); j++) 
+			for (size_t j = 0; j < AdjLst_W[v].size(); j++)
 			{
 				int to = AdjLst_W[v][j].first - 1,
 					sec = AdjLst_W[v][j].second;
-				if (!visited[to] && sec < min_edge[to]) 
+				if (!visited[to] && sec < min_edge[to])
 				{
 					newset.erase(std::make_pair(min_edge[to], to));
 					min_edge[to] = sec;
@@ -922,17 +922,16 @@ void Graph::reverseTransform(char type)
 	}
 }
 
-
 Graph Graph::getSpaingTreeKruscal()
 {
-	char old_type = gtype;	
+	char old_type = gtype;
 	this->transformToListOfEdges();
 	Graph result = Graph(n, gtype);
 	int val = 0;
 	std::vector <std::pair<int, int> > res;
 	DSU n_dsu = DSU(n);
-	
-	
+
+
 	sort(LOE_W.begin(), LOE_W.end(), comapre);
 
 	for (int i = 0; i < LOE_W.size(); i++) {
@@ -940,7 +939,7 @@ Graph Graph::getSpaingTreeKruscal()
 			second = std::get<1>(LOE_W[i]) - 1,
 			weight = std::get<2>(LOE_W[i]);
 
-		if (n_dsu.find(first) != n_dsu.find(second)) 
+		if (n_dsu.find(first) != n_dsu.find(second))
 		{
 			val += weight;
 			res.push_back(std::make_pair(first, second));
@@ -949,6 +948,58 @@ Graph Graph::getSpaingTreeKruscal()
 		}
 	}
 	reverseTransform(old_type);
+	return result;
+}
+
+Graph Graph::getSpaingTreeBoruvka()
+{
+	Graph result = Graph(n, gtype);
+	DSU dsu = DSU(n);
+	int val = 0;
+	int max = getmax() + 1;
+
+	int comp = 0;  
+	while (comp < n - 1) {
+		int breaker = n;
+		std::vector <int> min_edge(n, getmax() + 1);
+		std::vector <int> selected(n, -1);
+		for (int i = 0; i < AdjMatx.size(); i++) {
+			for (int j = 0; j < AdjMatx[i].size(); j++) {
+				int first = dsu.find(i);
+				int second = dsu.find(j);
+				int weight = AdjMatx[i][j];
+				if (weight != 0 && first != second) 
+				{
+					if (min_edge[first] > weight) 
+					{
+						min_edge[first] = weight;
+						selected[first] = second;
+						breaker--;
+					}
+					if (min_edge[second] > weight) 
+					{
+						min_edge[second] = weight;
+						selected[second] = first;
+						breaker--;
+					}
+				}
+			}
+		}
+
+		if (!breaker)
+			break;
+
+		for (int i = 0; i < min_edge.size(); i++) 
+		{
+			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i])) 
+			{
+				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
+				val += min_edge[i];
+				dsu.unite(i, selected[i]);
+				comp++;
+			}
+		}
+	}
 	return result;
 }
 //дополнительно
