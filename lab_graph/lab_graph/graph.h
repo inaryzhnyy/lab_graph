@@ -96,15 +96,21 @@ private:
 	int changeAdjList(int from, int to, int weight=0);
 	int changeLOE(int from, int to, int weight=0);
 
+	//Prim
+	Graph PrimMatx();
+	Graph PrimAdjList();
+
+	//Boruvka
+
+	Graph BoruvkaMatx();
+	Graph BoruvkaAList();
+	Graph BoruvkaLOE();
+
+	//some func
 	int getmax();
 	int getmaxMatx(int result);
 	int getmaxAList(int result);
 	int getmaxLOE(int result);
-
-	Graph PrimMatx();
-	Graph PrimAdjList();
-
-	//
 	void reverseTransform(char type);
 	
 };

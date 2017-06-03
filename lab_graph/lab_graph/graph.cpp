@@ -953,12 +953,34 @@ Graph Graph::getSpaingTreeKruscal()
 
 Graph Graph::getSpaingTreeBoruvka()
 {
+	switch (gtype)
+	{
+	case 'C':
+	{
+		return BoruvkaMatx();
+		break;
+	}
+	case 'L':
+	{
+		return BoruvkaAList();
+		break;
+	}
+	case 'E':
+	{
+		return BoruvkaLOE();
+		break;
+	}
+	}
+	return *this;
+}
+
+Graph Graph::BoruvkaMatx()
+{
 	Graph result = Graph(n, gtype);
 	DSU dsu = DSU(n);
 	int val = 0;
 	int max = getmax() + 1;
-
-	int comp = 0;  
+	int comp = 0;
 	while (comp < n - 1) {
 		int breaker = n;
 		std::vector <int> min_edge(n, getmax() + 1);
@@ -968,15 +990,15 @@ Graph Graph::getSpaingTreeBoruvka()
 				int first = dsu.find(i);
 				int second = dsu.find(j);
 				int weight = AdjMatx[i][j];
-				if (weight != 0 && first != second) 
+				if (weight != 0 && first != second)
 				{
-					if (min_edge[first] > weight) 
+					if (min_edge[first] > weight)
 					{
 						min_edge[first] = weight;
 						selected[first] = second;
 						breaker--;
 					}
-					if (min_edge[second] > weight) 
+					if (min_edge[second] > weight)
 					{
 						min_edge[second] = weight;
 						selected[second] = first;
@@ -985,13 +1007,12 @@ Graph Graph::getSpaingTreeBoruvka()
 				}
 			}
 		}
-
 		if (!breaker)
 			break;
 
-		for (int i = 0; i < min_edge.size(); i++) 
+		for (int i = 0; i < min_edge.size(); i++)
 		{
-			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i])) 
+			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
 			{
 				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
 				val += min_edge[i];
@@ -1001,6 +1022,60 @@ Graph Graph::getSpaingTreeBoruvka()
 		}
 	}
 	return result;
+}
+
+Graph Graph::BoruvkaAList()
+{
+	Graph result = Graph(n, gtype);
+	DSU dsu = DSU(n);
+	int val = 0;
+	int max = getmax() + 1;
+	int comp = 0;
+	while (comp < n - 1) {
+		int breaker = n;
+		std::vector <int> min_edge(n, getmax() + 1);
+		std::vector <int> selected(n, -1);
+		{
+			for (int i = 0; i < AdjLst_W.size(); i++) {
+				for (int j = 0; j < AdjLst_W[i].size(); j++) {
+					int first = dsu.find(i);
+					int second = dsu.find(AdjLst_W[i][j].first - 1);
+					int weight = AdjLst_W[i][j].second;
+					if (first != second) {
+						if (min_edge[first] > weight) {
+							min_edge[first] = weight;
+							selected[first] = second;
+							breaker--;
+						}
+						if (min_edge[second] > weight) {
+							min_edge[second] = weight;
+							selected[second] = first;
+							breaker--;
+						}
+					}
+				}
+			}
+		}
+		if (!breaker)
+			break;
+
+		for (int i = 0; i < min_edge.size(); i++)
+		{
+			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
+			{
+				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
+				val += min_edge[i];
+				dsu.unite(i, selected[i]);
+				comp++;
+			}
+		}
+	}
+	return result;
+}
+
+Graph Graph::BoruvkaLOE()
+{
+
 }
 //дополнительно
 bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second)
