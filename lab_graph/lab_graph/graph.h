@@ -10,7 +10,8 @@
 #include "DSU.h"
 
 
-//ТEТ Ч индикатор представлени€ список ребер, LOE//ТLТ Ч индикатор представлени€ список смежных вершин AdjList
+//ТEТ Ч индикатор представлени€ список ребер, LOE
+//ТLТ Ч индикатор представлени€ список смежных вершин AdjList
 //ТCТ Ч индикатор представлени€ матрица смежности AdjMatx
 
 //using namespace std;
@@ -31,7 +32,8 @@ public:
 	//char type_g();
 	Graph getSpaingTreePrima();
 	Graph getSpaingTreeKruscal();
-	Graph getSpaingTreeBoruvka();
+	Graph getSpaingTreeBoruvka();
+
 
 private:
 	std::vector <std::vector<int>> AdjLst;//список смежных сершин

@@ -671,7 +671,7 @@ void Graph::transfAdjListToLOE()
 			{
 				for (int j = 0; j < AdjLst_W[i].size(); j++)
 				{
-					if ((AdjLst_W[i][j].first) && (i <= j))
+					if ((AdjLst_W[i][j].first) && (i+1 <= AdjLst_W[i][j].first))
 						addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
 				}
 			}
@@ -832,8 +832,13 @@ Graph Graph::getSpaingTreePrima()
 	}
 	case 'E':
 	{
+		Graph backup = Graph();
+		backup = *this;
+		Graph neg = Graph();
 		this->transformToAdjList();
-		return PrimAdjList();
+		neg= PrimAdjList();
+		*this = backup;
+		return neg;
 		break;
 	}
 	}
@@ -871,7 +876,7 @@ Graph Graph::PrimMatx()
 
 		}
 	}
-	//printf("%d \n", val);
+	printf("%d \n", val);
 	return result_graph;
 }
 Graph Graph::PrimAdjList()
@@ -917,7 +922,7 @@ Graph Graph::PrimAdjList()
 
 		}
 	}
-	//printf("%d \n", val);
+	printf("%d \n", val);
 	return result_graph;
 }
 void Graph::reverseTransform(char type)
@@ -933,6 +938,8 @@ void Graph::reverseTransform(char type)
 Graph Graph::getSpaingTreeKruscal()
 {
 	char old_type = gtype;
+	Graph backup = Graph();
+	backup = *this;
 	this->transformToListOfEdges();
 	Graph result = Graph(n, gtype);
 	int val = 0;
@@ -955,8 +962,8 @@ Graph Graph::getSpaingTreeKruscal()
 
 		}
 	}
-	//printf("%d \n", val);
-	reverseTransform(old_type);
+	printf("%d \n", val);
+	*this = backup;
 	return result;
 }
 
@@ -991,6 +998,7 @@ Graph Graph::BoruvkaMatx()
 	int max = getmax() + 1;
 	int comp = 0;
 	while (comp < n - 1) {
+		int comp_new = comp;
 		int breaker = n;
 		std::vector <int> min_edge(n, getmax() + 1);
 		std::vector <int> selected(n, -1);
@@ -1005,20 +1013,19 @@ Graph Graph::BoruvkaMatx()
 					{
 						min_edge[first] = weight;
 						selected[first] = second;
-						breaker--;
+						//breaker--;
 					}
 					if (min_edge[second] > weight)
 					{
 						min_edge[second] = weight;
 						selected[second] = first;
-						breaker--;
+						//breaker--;
 					}
 				}
 			}
 		}
-		if (!breaker)
-			break;
-
+		//if (breaker)
+		//	break;
 		for (int i = 0; i < min_edge.size(); i++)
 		{
 			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
@@ -1030,8 +1037,10 @@ Graph Graph::BoruvkaMatx()
 				comp++;
 			}
 		}
+		if (!(comp_new - comp))
+			break;
 	}
-	//printf("%d \n", val);
+	printf("%d \n", val);
 	return result;
 }
 
@@ -1043,7 +1052,8 @@ Graph Graph::BoruvkaAList()
 	int max = getmax() + 1;
 	int comp = 0;
 	while (comp < n - 1) {
-		int breaker = n;
+		int comp_new = comp;
+		//int breaker = n;
 		std::vector <int> min_edge(n, getmax() + 1);
 		std::vector <int> selected(n, -1);
 
@@ -1057,18 +1067,18 @@ Graph Graph::BoruvkaAList()
 					{
 						min_edge[first] = weight;
 						selected[first] = second;
-						breaker--;
+						//breaker--;
 					}
 					if (min_edge[second] > weight) {
 						min_edge[second] = weight;
 						selected[second] = first;
-						breaker--;
+						//breaker--;
 					}
 				}
 			}
 		}
-		if (!breaker)
-			break;
+		//if (!breaker)
+		//	break;
 
 		for (int i = 0; i < min_edge.size(); i++)
 		{
@@ -1080,8 +1090,10 @@ Graph Graph::BoruvkaAList()
 				comp++;
 			}
 		}
+		if (!(comp_new - comp))
+			break;
 	}
-	//printf("%d \n", val);
+	printf("%d\n", val);
 	return result;
 }
 
@@ -1093,7 +1105,7 @@ Graph Graph::BoruvkaLOE()
 	int max = getmax() + 1;
 	int comp = 0;
 	while (comp < n - 1) {
-		int breaker = n;
+		int comp_new = comp;
 		std::vector <int> min_edge(n, getmax() + 1);
 		std::vector <int> selected(n, -1);
 		for (int i = 0; i < LOE_W.size(); i++) {
@@ -1111,8 +1123,6 @@ Graph Graph::BoruvkaLOE()
 				}
 			}
 		}
-		if (!breaker)
-			break;
 
 		for (int i = 0; i < min_edge.size(); i++)
 		{
@@ -1124,8 +1134,10 @@ Graph Graph::BoruvkaLOE()
 				comp++;
 			}
 		}
+		if (!(comp_new - comp))
+			break;
 	}
-	//printf("%d \n", val);
+	printf("%d\n", val);
 	return result;
 }
 //дополнительно
