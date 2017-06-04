@@ -46,13 +46,13 @@ int main()
 	Graph le = Graph();
 	Graph am = Graph();
 	//al.readGraph("test/test_list.txt");
-	am.readGraph("test/test_matx.txt");
+	//am.readGraph("test/test_matx.txt");
 	//le.readGraph("test/test_edge.txt");
 	//test(1, temp);
 	//test(1, le); test(2, le); test(3, le);
 	//test(1, al); test(2, al); test(3, al);
-	test(1, am); test(2, am); 
-	test(3, am);
+	//test(1, am); test(2, am); 
+	//test(3, am);
 
 	system("pause");
 	return 0;

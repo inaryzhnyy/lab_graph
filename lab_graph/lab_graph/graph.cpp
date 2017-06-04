@@ -1,4 +1,5 @@
 #include "graph.h"
+//#include "DSU.h"
 //using namespace std;
 bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second);
 Graph::Graph()
@@ -670,7 +671,7 @@ void Graph::transfAdjListToLOE()
 			{
 				for (int j = 0; j < AdjLst_W[i].size(); j++)
 				{
-					if ((AdjLst_W[i][j].first) && (i+1 <= AdjLst_W[i][j].first))
+					if ((AdjLst_W[i][j].first) && (i + 1 <= AdjLst_W[i][j].first))
 						addEdge(i + 1, AdjLst_W[i][j].first, AdjLst_W[i][j].second);
 				}
 			}
@@ -835,7 +836,7 @@ Graph Graph::getSpaingTreePrima()
 		backup = *this;
 		Graph neg = Graph();
 		this->transformToAdjList();
-		neg= PrimAdjList();
+		neg = PrimAdjList();
 		*this = backup;
 		return neg;
 		break;
@@ -852,26 +853,26 @@ Graph Graph::PrimMatx()
 	std::vector <int> selected(n, -1);				 // вершины
 	min_edge[0] = 0;
 
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 	{
-		int v = -1;
-		for (int j = 0; j < n; j++) 
+		int vrt = -1;
+		for (int j = 0; j < n; j++)
 		{
-			if (!visited[j] && (v == -1 || min_edge[j] < min_edge[v])) 
+			if (!visited[j] && (vrt == -1 || min_edge[j] < min_edge[vrt]))
 			{
-				v = j;
+				vrt = j;
 			}
 		}
-		visited[v] = true;
+		visited[vrt] = true;
 		for (int to = 0; to < n; to++) {
-			if (!visited[to] && AdjMatx[v][to] != 0 && AdjMatx[v][to] < min_edge[to]) {
-				min_edge[to] = AdjMatx[v][to];
-				selected[to] = v;
+			if (!visited[to] && AdjMatx[vrt][to] != 0 && AdjMatx[vrt][to] < min_edge[to]) {
+				min_edge[to] = AdjMatx[vrt][to];
+				selected[to] = vrt;
 			}
 		}
 	}
 	int val = 0;
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 	{
 		if (selected[i] != -1)
 		{
@@ -896,19 +897,19 @@ Graph Graph::PrimAdjList()
 		newset.insert(std::make_pair(0, prim));
 
 		while (!newset.empty()) {
-			int v = newset.begin()->second;
+			int vrt = newset.begin()->second;
 			newset.erase(newset.begin());
-			visited[v] = true;
+			visited[vrt] = true;
 
-			for (size_t j = 0; j < AdjLst_W[v].size(); j++)
+			for (size_t j = 0; j < AdjLst_W[vrt].size(); j++)
 			{
-				int to = AdjLst_W[v][j].first - 1,
-					sec = AdjLst_W[v][j].second;
+				int to = AdjLst_W[vrt][j].first - 1,
+					sec = AdjLst_W[vrt][j].second;
 				if (!visited[to] && sec < min_edge[to])
 				{
 					newset.erase(std::make_pair(min_edge[to], to));
 					min_edge[to] = sec;
-					selected[to] = v;
+					selected[to] = vrt;
 					newset.insert(std::make_pair(min_edge[to], to));
 				}
 			}
@@ -1009,26 +1010,26 @@ Graph Graph::BoruvkaMatx()
 		for (int i = 0; i < AdjMatx.size(); i++) {
 			for (int j = 0; j < AdjMatx[i].size(); j++)
 				if (i >= j)
-			{
-				int first = dsu.find(i);
-				int second = dsu.find(j);
-				int weight = AdjMatx[i][j];
-				if (weight != 0 && first != second)
 				{
-					if (min_edge[first] > weight)
+					int first = dsu.find(i);
+					int second = dsu.find(j);
+					int weight = AdjMatx[i][j];
+					if (weight != 0 && first != second)
 					{
-						min_edge[first] = weight;
-						selected[first] = second;
-						//breaker--;
-					}
-					if (min_edge[second] > weight)
-					{
-						min_edge[second] = weight;
-						selected[second] = first;
-						//breaker--;
+						if (min_edge[first] > weight)
+						{
+							min_edge[first] = weight;
+							selected[first] = second;
+							//breaker--;
+						}
+						if (min_edge[second] > weight)
+						{
+							min_edge[second] = weight;
+							selected[second] = first;
+							//breaker--;
+						}
 					}
 				}
-			}
 		}
 		/*if (!breaker)
 			break;*/
@@ -1149,4 +1150,447 @@ Graph Graph::BoruvkaLOE()
 bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second)
 {
 	return std::get<2>(first) < std::get<2>(second);
+}
+
+void Graph::check_Euler_matx(DSU &uni, std::vector<int> &deg)
+{
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (AdjMatx[i][j]) {
+				deg[i]++;
+				uni.unite(i, j);
+			}
+		}
+	}
+
+}
+void Graph::check_Euler_list(DSU &uni, std::vector<int> &deg)
+{
+
+	if (!gweight) {
+		for (int i = 0; i < AdjLst.size(); i++) {
+			for (int j = 0; j < AdjLst[i].size(); j++) {
+				uni.unite(i, AdjLst[i][j] - 1);
+				deg[i]++;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < AdjLst_W.size(); i++) {
+			for (int j = 0; j < AdjLst_W[i].size(); j++) {
+				uni.unite(i, AdjLst_W[i][j].first - 1);
+				deg[i]++;
+			}
+		}
+	}
+}
+void Graph::check_Euler_LOE(DSU &uni, std::vector<int> &deg) {
+
+	if (!gweight) {
+		for (int i = 0; i < LOE.size(); i++) {
+			uni.unite(LOE[i].first - 1, LOE[i].second - 1);
+			deg[LOE[i].first - 1]++;
+		}
+	}
+	else {
+		for (int i = 0; i < LOE_W.size(); i++) {
+			uni.unite(std::get<0>(LOE_W[i]) - 1, std::get<1>(LOE_W[i]) - 1);
+			deg[std::get<0>(LOE_W[i]) - 1]++;
+		}
+	}
+}
+int Graph::checkEuler(bool &circleExist)
+{
+	circleExist = false;
+
+	std::vector <int> deg(n, 0); // степени вершин
+	DSU dsu = DSU(n);
+	int odd = 0;
+	int startVer = 0;
+	int barea = 0;  // bound_area>2
+
+	switch (gtype)
+	{
+	case 'C': {check_Euler_matx(dsu, deg); break; }
+	case 'L': {check_Euler_list(dsu, deg); break; }
+	case 'E': {check_Euler_LOE(dsu, deg); break; }
+	}
+	for (int i = 0; i < deg.size(); i++) {
+		if (deg[i] % 2 == 1) {
+			odd++;
+			startVer = i + 1;
+		}
+	}
+	for (int i = 0; i < dsu.rank.size(); i++) {
+		if (dsu.rank[i] > 1) {
+			barea++;
+			if (!odd) {
+				startVer = i + 1;
+			}
+		}
+	}
+	if (!odd)
+		circleExist = true;
+	if (odd > 2 || barea > 1) {
+		return 0;
+	}
+	else {
+		return startVer;
+	}
+}
+void Graph::bfs_matx(std::queue <int> &list, std::vector <bool> &visited, int first, int second, int vrt)
+{
+	for (int i = 0; i < AdjMatx[vrt].size(); i++) {
+		int to = i;
+
+		if (vrt == first && second == to)
+			continue;
+
+		if (!visited[to] && AdjMatx[vrt][i]) {
+			visited[to] = true;
+			list.push(to);
+		}
+	}
+}
+void Graph::bfs_adjlist(std::queue <int> &list, std::vector <bool> &visited, int first, int second, int vrt)
+{
+	if (!gweight) {
+		for (int i = 0; i < AdjLst[vrt].size(); i++) {
+			int to = AdjLst[vrt][i] - 1;
+
+			if (vrt == first && second == to)
+				continue;
+
+			if (!visited[to]) {
+				visited[to] = true;
+				list.push(to);
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < AdjLst_W[vrt].size(); i++) {
+			int to = AdjLst_W[vrt][i].first - 1;
+
+			if (vrt == first && second == to)
+				continue;
+
+			if (!visited[to]) {
+				visited[to] = true;
+				list.push(to);
+			}
+		}
+	}
+}
+bool Graph::bfs(int first, int second)
+{
+	std::vector <bool> visited(n, false);
+	std::queue <int> list;
+	list.push(first);
+	visited[first] = true;
+	while (!list.empty()) {
+		int  vrt = list.front();
+		list.pop();
+		switch (gtype)
+		{
+		case 'C': { bfs_matx(list, visited, first, second, vrt); break; }
+		case 'L': { bfs_adjlist(list, visited, first, second, vrt); break; }
+		}
+	}
+	if (visited[second])
+		return true;
+	return false;
+}
+
+std::vector <int> Graph::EuleranTourMatx(int vrt)
+{
+	std::vector <int> path;
+	std::set <std::pair <int, int> > visited;
+	while (visited.size() < m) {
+		int bridge = -1;
+		int prev = vrt;
+		for (int i = 0; i < AdjMatx[vrt].size(); i++)
+		{
+			if (vrt == i)
+				continue;
+
+			if (bridge == -1 && !bfs(vrt, i))
+			{
+				bridge = i;
+				continue;
+			}
+
+			bool visited_e = false;
+			if (vrt < i)
+				visited_e = visited.find(std::make_pair(vrt, i)) != visited.end();
+			else
+				visited_e = visited.find(std::make_pair(i, vrt)) != visited.end();
+
+			if (AdjMatx[vrt][i] && !visited_e)
+			{
+				if (vrt < i)
+					visited.insert(std::make_pair(vrt, i));
+				else
+					visited.insert(std::make_pair(i, vrt));
+
+				path.push_back(vrt);
+
+				vrt = i;
+
+				continue;
+			}
+		}
+		if (vrt == prev && bridge != -1)
+		{
+			if (vrt < bridge)
+				visited.insert(std::make_pair(vrt, bridge));
+			else
+				visited.insert(std::make_pair(bridge, vrt));
+
+			path.push_back(vrt);
+
+			vrt = bridge;
+		}
+	}
+	path.push_back(vrt);
+	return path;
+}
+
+std::vector <int> Graph::EuleranTourAdjList(int vrt)
+{
+	std::vector <int> path;
+	std::set <std::pair <int, int> > visited;
+	if (!gweight) {
+		while (visited.size() < m) {
+			int bridge = -1;
+			int prev = vrt;
+			for (int i = 0; i < AdjLst[vrt].size(); i++) {
+				int to = AdjLst[vrt][i] - 1;
+
+				if (bridge == -1 && !bfs(vrt, to)) { // если мост
+					bridge = to;
+					continue;
+				}
+
+				bool visited_e = false;  // посещено ребро или нет
+				if (vrt < to)
+					visited_e = visited.find(std::make_pair(vrt, to)) != visited.end();
+				else
+					visited_e = visited.find(std::make_pair(to, vrt)) != visited.end();
+
+				if (!visited_e) {  // если не посещено и есть ребро
+					if (vrt < to)
+						visited.insert(std::make_pair(vrt, to));
+					else
+						visited.insert(std::make_pair(to, vrt));
+
+					path.push_back(vrt);
+
+					vrt = to;  // теперь с этой вершины продолжаем
+
+					continue;
+				}
+			}
+
+			if (vrt == prev && bridge != -1) { // никуда не ушли - идем по мосту если есть
+				if (vrt < bridge)
+					visited.insert(std::make_pair(vrt, bridge));
+				else
+					visited.insert(std::make_pair(bridge, vrt));
+
+				path.push_back(vrt);
+
+				vrt = bridge;  // теперь с этой вершины продолжаем
+			}
+		}
+		path.push_back(vrt);
+	}
+	else {
+		while (visited.size() < m) {
+			int bridge = -1;
+			int prev = vrt; // сохраняем
+			for (int i = 0; i < AdjLst_W[vrt].size(); i++) {
+				int to = AdjLst_W[vrt][i].first - 1;
+
+				if (bridge == -1 && !bfs(vrt, to)) { // если мост
+					bridge = to;
+					continue;
+				}
+
+				bool visited_e = false;  // посещено ребро или нет
+				if (vrt < to)
+					visited_e = visited.find(std::make_pair(vrt, to)) != visited.end();
+				else
+					visited_e = visited.find(std::make_pair(to, vrt)) != visited.end();
+
+				if (!visited_e) {  // если не посещено и есть ребро
+					if (vrt < to)
+						visited.insert(std::make_pair(vrt, to));
+					else
+						visited.insert(std::make_pair(to, vrt));
+
+					path.push_back(vrt);
+
+					vrt = to;
+
+					continue;
+				}
+			}
+
+			if (vrt == prev && bridge != -1) {
+				if (vrt < bridge)
+					visited.insert(std::make_pair(vrt, bridge));
+				else
+					visited.insert(std::make_pair(bridge, vrt));
+
+				path.push_back(vrt);
+
+				vrt = bridge;  // теперь с этой вершины продолжаем
+			}
+		}
+		path.push_back(vrt);
+	}
+	return path;
+}
+std::vector<int> Graph::getEuleranTourFleri(int start)
+{
+	std::vector<int> result;
+	switch (gtype)
+	{
+	case 'C': {result = EuleranTourMatx(--start); break; }
+	case 'L': {result = EuleranTourAdjList(--start); break; }
+	case 'E':
+	{
+		Graph old = *this;
+		this->transformToAdjList();
+		result = EuleranTourAdjList(--start);
+		*this = old;
+		break;
+	}
+	}
+	return result;
+}
+
+std::vector<int> Graph::EulerTourEffMatx(int start)
+{
+	std::vector <int> path;
+	std::set <std::pair <int, int> > visited;
+	std::stack <int> list;
+
+	list.push(start - 1);
+	while (!list.empty()) {
+		int vrt = list.top();
+		for (int i = 0; i < AdjMatx[vrt].size(); i++) 
+		{
+			int to = i;
+			if (vrt == to)
+				continue;
+
+			bool visited_e = false;  
+			if (vrt < to)
+				visited_e = visited.find(std::make_pair(vrt, to)) != visited.end();
+			else
+				visited_e = visited.find(std::make_pair(to, vrt)) != visited.end();
+
+			if (AdjMatx[vrt][to] && !visited_e)
+			{  
+				if (vrt < to)
+					visited.insert(std::make_pair(vrt, to));
+				else
+					visited.insert(std::make_pair(to, vrt));
+
+				list.push(to);
+				break;
+			}
+		}
+
+		if (vrt == list.top()) {
+			list.pop();
+			path.push_back(vrt);
+		}
+	}
+	return path;
+}
+std::vector<int> Graph::EulerTourEffAdjList(int start)
+{
+	std::vector <int> path;
+	std::set <std::pair <int, int> > visited;
+	std::stack <int> list;
+	
+	list.push(start - 1);
+	while (!list.empty()) {
+		int vrt = list.top();
+
+		if (!gweight) 
+		{
+			for (int i = 0; i < AdjLst[vrt].size(); i++) 
+			{
+				int to = AdjLst[vrt][i] - 1;
+
+				bool visited_e = false; 
+				if (vrt < to)
+					visited_e = visited.find(std::make_pair(vrt, to)) != visited.end();
+				else
+					visited_e = visited.find(std::make_pair(to, vrt)) != visited.end();
+
+				if (!visited_e)
+				{ 
+					if (vrt < to)
+						visited.insert(std::make_pair(vrt, to));
+					else
+						visited.insert(std::make_pair(to, vrt));
+
+					list.push(to);
+					break;
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < AdjLst_W[vrt].size(); i++) 
+			{
+				int to = AdjLst_W[vrt][i].first - 1;
+
+				bool visited_e = false;  
+				if (vrt < to)
+					visited_e = visited.find(std::make_pair(vrt, to)) != visited.end();
+				else
+					visited_e = visited.find(std::make_pair(to, vrt)) != visited.end();
+
+				if (!visited_e) 
+				{ 
+					if (vrt < to)
+						visited.insert(std::make_pair(vrt, to));
+					else
+						visited.insert(std::make_pair(to, vrt));
+
+					list.push(to);
+					break;
+				}
+			}
+		}
+		if (vrt == list.top()) 
+		{
+			list.pop();
+			path.push_back(vrt);
+		}
+	}
+	return path;
+}
+
+std::vector<int> Graph::getEuleranTourEffective(int start)
+{	
+	std::vector<int> result;
+	switch (gtype)
+	{
+	case 'C': {result = EulerTourEffMatx(start); break; }
+	case 'L': {result = EulerTourEffAdjList(start); break; }
+	case 'E':
+	{
+		Graph old = *this;
+		this->transformToAdjList();
+		result = EuleranTourAdjList(--start);
+		*this = old;
+		break;
+	}
+	}
+	return result;
 }

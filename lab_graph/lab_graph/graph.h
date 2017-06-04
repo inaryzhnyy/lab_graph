@@ -6,7 +6,8 @@
 #include <tuple>
 #include <algorithm>
 #include <set>
-
+#include <queue>
+#include <stack>
 #include "DSU.h"
 
 
@@ -33,6 +34,9 @@ public:
 	Graph getSpaingTreeKruscal();
 	Graph getSpaingTreeBoruvka();
 
+	int checkEuler(bool &circleExist);
+	std::vector<int> getEuleranTourEffective(int start);
+	std::vector<int> getEuleranTourFleri(int start);
 
 private:
 	std::vector <std::vector<int>> AdjLst;//список смежных сершин
@@ -43,7 +47,7 @@ private:
 
 	std::vector<std::vector<int>>             AdjMatx;  // матрица смежности
 
-
+	
 
 	char gtype;
 	int direct;//ориентированный/нет
@@ -107,12 +111,32 @@ private:
 	Graph BoruvkaAList();
 	Graph BoruvkaLOE();
 
+	//Euler
+
+	
+
 	//some func
 	int getmax();
 	int getmaxMatx(int result);
 	int getmaxAList(int result);
 	int getmaxLOE(int result);
 	void reverseTransform(char type);
+	
+
+	void check_Euler_matx(DSU &uni, std::vector<int> &deg);
+	void check_Euler_list(DSU &uni, std::vector<int> &deg);
+	void check_Euler_LOE(DSU &uni, std::vector<int> &deg);
+
+	bool bfs(int first, int second);
+	void bfs_matx(std::queue <int> &list, std::vector <bool> &visited, int first, int second, int vrt);
+	void bfs_adjlist(std::queue <int> &list, std::vector <bool> &visited, int first, int second, int vvt);
+
+	std::vector <int> EuleranTourMatx(int);
+	std::vector <int> EuleranTourAdjList(int);
+
+	std::vector<int> EulerTourEffMatx(int start);
+	std::vector<int> EulerTourEffAdjList(int start);
+
 	
 };
 
