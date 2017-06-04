@@ -1,5 +1,4 @@
 #include "graph.h"
-
 //using namespace std;
 bool comapre(const std::tuple<int, int, int>& first, const std::tuple<int, int, int>& second);
 Graph::Graph()
@@ -853,10 +852,13 @@ Graph Graph::PrimMatx()
 	std::vector <int> selected(n, -1);				 // вершины
 	min_edge[0] = 0;
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) 
+	{
 		int v = -1;
-		for (int j = 0; j < n; j++) {
-			if (!visited[j] && (v == -1 || min_edge[j] < min_edge[v])) {
+		for (int j = 0; j < n; j++) 
+		{
+			if (!visited[j] && (v == -1 || min_edge[j] < min_edge[v])) 
+			{
 				v = j;
 			}
 		}
@@ -869,14 +871,16 @@ Graph Graph::PrimMatx()
 		}
 	}
 	int val = 0;
-	for (int i = 0; i < n; i++) {
-		if (selected[i] != -1) {
+	for (int i = 0; i < n; i++) 
+	{
+		if (selected[i] != -1)
+		{
 			result_graph.addEdge(selected[i] + 1, i + 1, AdjMatx[selected[i]][i]);
-			val += AdjMatx[selected[i]][i];
+			//val += AdjMatx[selected[i]][i];
 
 		}
 	}
-	printf("%d \n", val);
+	//printf("%d \n", val);
 	return result_graph;
 }
 Graph Graph::PrimAdjList()
@@ -918,11 +922,11 @@ Graph Graph::PrimAdjList()
 	for (int i = 0; i < n; i++) {
 		if (selected[i] != -1) {
 			result_graph.addEdge(selected[i] + 1, i + 1, min_edge[i]);
-			val += min_edge[i];
+			//val += min_edge[i];
 
 		}
 	}
-	printf("%d \n", val);
+	//printf("%d \n", val);
 	return result_graph;
 }
 void Graph::reverseTransform(char type)
@@ -958,11 +962,11 @@ Graph Graph::getSpaingTreeKruscal()
 			res.push_back(std::make_pair(first, second));
 			n_dsu.unite(first, second);
 			result.addEdge(first + 1, second + 1, weight);
-			val += weight;
+			//val += weight;
 
 		}
 	}
-	printf("%d \n", val);
+	//printf("%d \n", val);
 	*this = backup;
 	return result;
 }
@@ -1000,10 +1004,12 @@ Graph Graph::BoruvkaMatx()
 	while (comp < n - 1) {
 		int comp_new = comp;
 		int breaker = n;
-		std::vector <int> min_edge(n, getmax() + 1);
+		std::vector <int> min_edge(n, max);
 		std::vector <int> selected(n, -1);
 		for (int i = 0; i < AdjMatx.size(); i++) {
-			for (int j = 0; j < AdjMatx[i].size(); j++) {
+			for (int j = 0; j < AdjMatx[i].size(); j++)
+				if (i >= j)
+			{
 				int first = dsu.find(i);
 				int second = dsu.find(j);
 				int weight = AdjMatx[i][j];
@@ -1024,15 +1030,14 @@ Graph Graph::BoruvkaMatx()
 				}
 			}
 		}
-		//if (breaker)
-		//	break;
+		/*if (!breaker)
+			break;*/
 		for (int i = 0; i < min_edge.size(); i++)
 		{
 			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
 			{
 				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
-				val += min_edge[i];
-
+				//val += min_edge[i];
 				dsu.unite(i, selected[i]);
 				comp++;
 			}
@@ -1040,7 +1045,7 @@ Graph Graph::BoruvkaMatx()
 		if (!(comp_new - comp))
 			break;
 	}
-	printf("%d \n", val);
+	//printf("%d \n", val);
 	return result;
 }
 
@@ -1085,7 +1090,7 @@ Graph Graph::BoruvkaAList()
 			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
 			{
 				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
-				val += min_edge[i];
+				//val += min_edge[i];
 				dsu.unite(i, selected[i]);
 				comp++;
 			}
@@ -1093,7 +1098,7 @@ Graph Graph::BoruvkaAList()
 		if (!(comp_new - comp))
 			break;
 	}
-	printf("%d\n", val);
+	//printf("%d\n", val);
 	return result;
 }
 
@@ -1129,7 +1134,7 @@ Graph Graph::BoruvkaLOE()
 			if (min_edge[i] != max && selected[i] != -1 && dsu.find(i) != dsu.find(selected[i]))
 			{
 				result.addEdge(i + 1, selected[i] + 1, min_edge[i]);
-				val += min_edge[i];
+				//val += min_edge[i];
 				dsu.unite(i, selected[i]);
 				comp++;
 			}
@@ -1137,7 +1142,7 @@ Graph Graph::BoruvkaLOE()
 		if (!(comp_new - comp))
 			break;
 	}
-	printf("%d\n", val);
+	//printf("%d\n", val);
 	return result;
 }
 //дополнительно

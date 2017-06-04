@@ -29,7 +29,6 @@ public:
 	void transformToAdjMatrix();
 	void transformToListOfEdges();
 	void writeGraph(std::string fileName);
-	//char type_g();
 	Graph getSpaingTreePrima();
 	Graph getSpaingTreeKruscal();
 	Graph getSpaingTreeBoruvka();
